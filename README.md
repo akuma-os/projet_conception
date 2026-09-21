@@ -1,8 +1,4 @@
 # projet\_conception
+# Balade dans un labyrinthe
 
-C'est Mariem ! Salut
-
-
-
-Salut c'est un test !
-
+L'architecture du projet suit la structure standard Maven.
