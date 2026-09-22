@@ -1,1 +1,1 @@
-package Main.Java.fr.ul.acl.Start;
+package main.java.fr.ul.acl.start;
