@@ -1,9 +1,18 @@
-
 /bin/
-=======
 target/
 .vscode/
-*.class 
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# Java
+*.class
+
+# OS
 .DS_Store
 Thumbs.db
+
+# Logs
 *.log
