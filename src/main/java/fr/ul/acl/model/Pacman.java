@@ -1,4 +1,4 @@
-package main.java.fr.ul.acl.model;
+package fr.ul.acl.model;
 public class Pacman {
 	private int x;
 	private int y;
