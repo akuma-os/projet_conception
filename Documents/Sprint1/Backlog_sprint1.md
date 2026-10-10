@@ -1,65 +1,139 @@
-# Backlog— Sprint 1
+# Backlog — Sprint 1
 
-## Objectif du sprint
+## 1. Objectif du sprint
 
-Avoir une première version jouable du projet avec une interface graphique simple.
+Développer une première version jouable du jeu « Balade dans un labyrinthe » en réutilisant le moteur graphique fourni.
 
-## Fonctionnalités à réaliser
+À la fin du sprint, le joueur doit pouvoir déplacer un héros représenté par un carré dans un labyrinthe fixe, à l'aide des quatre flèches du clavier, sans pouvoir traverser les murs ni sortir des limites du labyrinthe.
 
-### 1. Déplacement du héros
+## 2. Périmètre du sprint
 
-- Création de la classe `Heros`.
-- Implémentation de la méthode `deplacer()`.
-- Gestion des déplacements vers le haut, le bas, la gauche et la droite.
-- Liaison des déplacements aux touches du clavier.
+### Fonctionnalités incluses
 
-### 2. Interface graphique
+- Affichage d'un labyrinthe fixe constitué de murs et de chemins.
+- Affichage du héros sous la forme d'un carré coloré.
+- Déplacement du héros vers le haut, le bas, la gauche et la droite.
+- Contrôle du héros à l'aide des touches du clavier.
+- Vérification des déplacements pour empêcher le passage à travers les murs et les limites.
+- Mise à jour de l'affichage après chaque évolution du jeu.
+- Tests de la logique de déplacement et des contraintes du labyrinthe.
 
-- Création de la classe `Interface`.
-- Création d'une fenêtre graphique permettant de visualiser le jeu.
-- Affichage du héros dans l'interface.
-- Intégration du héros et de ses déplacements dans l'interface.
-- Test des déplacements du héros.
+### Fonctionnalités exclues de ce sprint
 
-### 3. Labyrinthe et contraintes de déplacement
+Les fonctionnalités suivantes seront étudiées lors des prochains sprints, selon le backlog global :
 
-- Création de la classe `Labyrinthe`.
-- Mise en place des limites du labyrinthe.
-- Empêchement du héros de sortir de la zone du labyrinthe.
-- Empêchement du héros de traverser les murs.
-- Implémentation de la méthode `deplacementPossible()`.
+- Sprites et animations du héros.
+- Création et déplacements des monstres.
+- Collisions entre le héros et les monstres.
+- Trésors, pièges et cases magiques.
+- Téléportation.
+- Génération de labyrinthes supplémentaires et gestion des niveaux.
 
-## Analyse 
-1. Gestion du héros
-- Le héros possède une position dans le labyrinthe.
-- Le joueur peut demander un déplacement dans quatre directions.
-- Le système calcule la position cible.
-- Le déplacement n'est effectué que s'il est autorisé.
+## 3. Fonctionnalités à réaliser
 
-2. Gestion des contraintes du labyrinthe
-- Le labyrinthe possède des limites.
-- Le héros ne peut pas sortir de ces limites.
-- Certaines positions correspondent à des murs.
+### 3.1. Déplacement du héros
+
+Le héros possède une position initiale dans le labyrinthe. Le joueur peut demander un déplacement dans l'une des quatre directions à l'aide des flèches du clavier.
+
+Le système calcule la position cible et vérifie si le déplacement est autorisé avant de modifier la position du héros.
+
+**Critères d'acceptation :**
+- Le héros possède une position initiale.
+- Les quatre directions sont prises en charge.
+- Un déplacement valide modifie la position du héros d'une case.
+- Un déplacement invalide ne modifie pas sa position.
+
+### 3.2. Labyrinthe fixe et contraintes de déplacement
+
+Le jeu utilise un labyrinthe prédéfini composé de murs et de cases accessibles.
+
+Avant chaque déplacement, le système vérifie que la case cible se trouve dans les limites du labyrinthe et qu'elle ne correspond pas à un mur.
+
+**Critères d'acceptation :**
+- Le labyrinthe est défini à l'avance.
+- Les murs et les chemins sont identifiables.
+- Le héros ne peut pas sortir de la grille.
 - Le héros ne peut pas traverser un mur.
-- La possibilité d'un déplacement est déterminée par deplacementPossible().
+- Un déplacement refusé laisse le héros à sa position actuelle.
 
-3. Interface graphique
-- Une fenêtre permet de visualiser le jeu.
-- Le héros est affiché.
-- Les touches du clavier sont associées aux directions.
-- L'affichage est actualisé après chaque déplacement valide.
+### 3.3. Affichage graphique du jeu
 
-| Fonctionnalité                  | Description                                                                | Acteur  | Entrées                                | Comportement attendu                                                                                                                   | Résultat attendu                                                               |
-| ------------------------------- | -------------------------------------------------------------------------- | ------- | -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| **Déplacement du héros**        | Permettre au joueur de déplacer le héros dans le labyrinthe.               | Joueur  | Une touche de direction : ↑ ↓ ← →      | Lorsque le joueur appuie sur une touche, le système détermine la nouvelle position demandée et vérifie si le déplacement est autorisé. | Le héros se déplace dans la direction demandée si le déplacement est possible. |
-| **Déplacement vers le haut**    | Déplacer le héros d'une case vers le haut.                                 | Joueur  | Touche ↑                               | Le système demande un déplacement vers la case située au-dessus du héros.                                                              | Le héros monte d'une case si cette case est accessible.                        |
-| **Déplacement vers le bas**     | Déplacer le héros d'une case vers le bas.                                  | Joueur  | Touche ↓                               | Le système demande un déplacement vers la case située en dessous du héros.                                                             | Le héros descend d'une case si cette case est accessible.                      |
-| **Déplacement vers la gauche**  | Déplacer le héros d'une case vers la gauche.                               | Joueur  | Touche ←                               | Le système demande un déplacement vers la case située à gauche du héros.                                                               | Le héros se déplace d'une case vers la gauche si cette case est accessible.    |
-| **Déplacement vers la droite**  | Déplacer le héros d'une case vers la droite.                               | Joueur  | Touche →                               | Le système demande un déplacement vers la case située à droite du héros.                                                               | Le héros se déplace d'une case vers la droite si cette case est accessible.    |
-| **Vérification du déplacement** | Vérifier qu'un déplacement demandé respecte les contraintes du labyrinthe. | Système | Position actuelle + direction demandée | Le système vérifie si la nouvelle position se trouve dans une zone autorisée et si elle n'est pas occupée par un mur.                  | Le déplacement est accepté ou refusé.                                          |
-| **Limites du labyrinthe**       | Empêcher le héros de sortir de la zone de jeu.                             | Système | Nouvelle position du héros             | Le système vérifie que la nouvelle position reste à l'intérieur des limites du labyrinthe.                                             | Le héros ne peut pas dépasser les limites.                                     |
-| **Murs du labyrinthe**          | Empêcher le héros de traverser les murs.                                   | Système | Nouvelle position du héros             | Le système vérifie si la case demandée contient un mur.                                                                                | Si un mur est présent, le héros reste à sa position actuelle.                  |
-| **Affichage du jeu**            | Afficher une fenêtre permettant au joueur de visualiser le jeu.            | Joueur  | —                                      | Le système affiche la fenêtre du jeu avec le labyrinthe et le héros.                                                                   | Une interface graphique visible est affichée.                                  |
-| **Affichage du héros**          | Représenter le héros dans l'interface graphique.                           | Système | Position du héros                      | L'interface affiche le héros à sa position actuelle.                                                                                   | Le joueur peut voir la position du héros.                                      |
-| **Mise à jour de l'affichage**  | Actualiser l'affichage après un déplacement.                               | Système | Nouvelle position du héros             | Après un déplacement valide, l'interface met à jour la représentation du héros.                                                        | Le héros apparaît à sa nouvelle position.                                      |
+Le moteur graphique fourni par le professeur est utilisé pour afficher la fenêtre du jeu et actualiser le rendu.
+
+Le labyrinthe et le héros sont dessinés dans cette fenêtre. Le héros est représenté par un carré coloré, sans sprites ni animations.
+
+**Critères d'acceptation :**
+- Une fenêtre graphique s'ouvre au lancement du jeu.
+- Le labyrinthe et le héros sont visibles.
+- La position affichée du héros correspond à sa position réelle dans le jeu.
+- L'affichage est actualisé après un déplacement.
+
+### 3.4. Gestion des commandes clavier
+
+Le contrôleur du jeu traduit les événements clavier en commandes comprises par le moteur graphique.
+
+**Critères d'acceptation :**
+- La flèche ↑ correspond à un déplacement vers le haut.
+- La flèche ↓ correspond à un déplacement vers le bas.
+- La flèche ← correspond à un déplacement vers la gauche.
+- La flèche → correspond à un déplacement vers la droite.
+- Une commande correspondant à un déplacement interdit ne permet pas au héros de traverser un mur ou une limite.
+
+## 4. Analyse fonctionnelle
+
+| Fonctionnalité | Acteur / déclencheur | Comportement attendu | Résultat attendu |
+|---|---|---|---|
+| Affichage du jeu | Lancement de l'application | Le moteur crée la fenêtre et affiche le jeu. | Le labyrinthe et le héros sont visibles. |
+| Déplacement vers le haut | Joueur : touche ↑ | Le système vérifie la case située au-dessus du héros. | Le héros monte d'une case si le déplacement est autorisé. |
+| Déplacement vers le bas | Joueur : touche ↓ | Le système vérifie la case située en dessous du héros. | Le héros descend d'une case si le déplacement est autorisé. |
+| Déplacement vers la gauche | Joueur : touche ← | Le système vérifie la case située à gauche du héros. | Le héros se déplace d'une case vers la gauche si le déplacement est autorisé. |
+| Déplacement vers la droite | Joueur : touche → | Le système vérifie la case située à droite du héros. | Le héros se déplace d'une case vers la droite si le déplacement est autorisé. |
+| Vérification des limites | Demande de déplacement | Le système vérifie que la position cible appartient à la grille. | Le héros ne sort pas du labyrinthe. |
+| Vérification des murs | Demande de déplacement | Le système vérifie que la case cible n'est pas un mur. | Le héros ne traverse aucun mur. |
+| Mise à jour de l'affichage | Évolution de l'état du jeu | Le moteur demande le dessin de l'état actualisé. | La position du héros est correctement représentée. |
+
+## 5. Organisation technique
+
+Le moteur  est conservé et utilisé pour gérer l'exécution, les commandes clavier et l'affichage graphique. Les classes suivantes sont créées ou adaptées pour le labyrinthe.
+
+| Fichier | Package | Responsabilité |
+|---|---|---|
+| `Cmd.java` | `engine` — fourni | Définit les commandes `LEFT`, `RIGHT`, `UP`, `DOWN` et `IDLE`. |
+| `Game.java` | `engine` — fourni | Définit le contrat du jeu, avec `evolve()` et `isFinished()`. |
+| `GameController.java` | `engine` — fourni | Définit le contrat du contrôleur clavier. |
+| `GamePainter.java` | `engine` — fourni | Définit le contrat du dessin du jeu. |
+| `GameEngineGraphical.java` | `engine` — fourni | Coordonne l'exécution du jeu et l'affichage. |
+| `GraphicalInterface.java` et `DrawingPanel.java` | `engine` — fournis | Créent la fenêtre et la zone de dessin. |
+| `Heros.java` | `fr.ul.acl.model` | Stocke la position du héros et gère ses déplacements. |
+| `Labyrinthe.java` | `fr.ul.acl.model` | Représente la grille et vérifie les murs et les limites. |
+| `LabyrintheGame.java` | `fr.ul.acl.model` | Implémente `Game` et fait évoluer l'état du jeu selon les commandes. |
+| `LabyrintheController.java` | `fr.ul.acl.controller` | Implémente `GameController` et traduit les touches en commandes. |
+| `LabyrinthePainter.java` | `fr.ul.acl.view` | Implémente `GamePainter` et dessine le labyrinthe et le héros. |
+| `Main.java` | `fr.ul.acl.start` | Initialise le jeu, le contrôleur, le dessinateur et le moteur graphique. |
+| `HerosTest.java` | `fr.ul.acl` — tests | Vérifie les déplacements valides et refusés du héros. |
+| `LabyrintheTest.java` | `fr.ul.acl` — tests | Vérifie les limites et les murs. |
+
+
+### 6. Répartition des tâches
+
+| Responsable | Tâche technique | Fichiers à créer ou modifier | Branche Git |
+|---|---|---|---|
+| Mariem | Gérer la position du héros et implémenter son déplacement, en vérifiant que chaque déplacement est autorisé. | `Heros.java` | `feature/heros` |
+| Ilias | Créer la grille fixe du labyrinthe et implémenter la vérification des murs et des limites. | `Labyrinthe.java` | `feature/labyrinthe` |
+| Justine | Intégrer le modèle au moteur, transmettre les commandes au héros et lancer l'application. | `LabyrintheGame.java`, `Main.java` | `feature/game-integration` |
+| Sarra | Dessiner le jeu : fond noir, murs gris et héros représenté par un carré blanc, en s'inspirant de l'exemple du professeur. | `LabyrinthePainter.java` | `feature/labyrinthe-painter` |
+| Jules | Gérer les événements clavier et traduire les quatre flèches en commandes du moteur. | `LabyrintheController.java` | `feature/labyrinthe-controller` |
+| Andreas | Développer les tests automatisés du héros et du labyrinthe : déplacement valide, collision avec un mur et dépassement des limites. | `HerosTest.java`, `LabyrintheTest.java` | `test/model` |
+
+### 2. Critères de validation des tâches
+
+| Fichier / élément | Critères d'acceptation |
+|---|---|
+| `Heros.java` | Le héros possède une position et se déplace d'une case lorsque le déplacement est autorisé. Sa position reste inchangée si le déplacement est interdit. |
+| `Labyrinthe.java` | Le labyrinthe possède une grille fixe. La méthode `deplacementPossible(x, y)` refuse les positions hors limites et les cases contenant un mur. |
+| `LabyrintheGame.java` | Les commandes reçues sont interprétées et transmises à la logique du jeu. Le déplacement respecte les règles du labyrinthe. |
+| `LabyrintheController.java` | Les flèches haut, bas, gauche et droite correspondent respectivement aux commandes `Cmd.UP`, `Cmd.DOWN`, `Cmd.LEFT` et `Cmd.RIGHT`. |
+| `LabyrinthePainter.java` | Le fond noir, les murs gris et le carré blanc représentant le héros sont dessinés correctement. La position du carré correspond à celle du héros. |
+| `Main.java` | L'application démarre sans erreur et ouvre la fenêtre graphique. |
+| `HerosTest.java` et `LabyrintheTest.java` | Les tests vérifient les déplacements autorisés et le blocage des déplacements vers les murs ou en dehors du labyrinthe. |
 
