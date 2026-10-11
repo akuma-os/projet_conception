@@ -7,7 +7,7 @@ Ce projet est réalisé dans le cadre du cours d'**Analyse et Conception de Logi
 
 ## Aperçu de la première version de l'application 
 
-![Capture d'écran du jeu Balade dans un labyrinthe](images/Version1Jeu.jpg)
+![Capture d'écran du jeu Balade dans un labyrinthe](Images/Version1Jeu.jpg)
 
 ## Technologies utilisées
 
