@@ -40,7 +40,7 @@ Les principales évolutions prévues sont :
 - **Vérifier la compatibilité avec les fonctionnalités existantes**, notamment les commandes clavier et le blocage des déplacements interdits.
 - **Tester et valider la nouvelle version** avant de poursuivre les évolutions prévues dans le backlog global.
 
-À l'issue du Sprint 2, l'objectif est d'obtenir une **version v3 du jeu**, avec un héros représenté par un sprite et une interface graphique améliorée, tout en conservant un jeu fonctionnel.
+À l'issue du Sprint 2, l'objectif est d'obtenir une **version v2 du jeu**, avec un héros représenté par un sprite et une interface graphique améliorée, tout en conservant un jeu fonctionnel.
 
 
 ## Conclusion
