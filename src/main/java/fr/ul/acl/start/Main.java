@@ -10,7 +10,7 @@ public class Main {
     public static void main(String[] args) throws InterruptedException {
         LabyrintheGame game = new LabyrintheGame();
         LabyrinthePainter painter = new LabyrinthePainter(game);
-        LabyrintheController controller = new LabyrintheController();
+        LabyrintheController controller = new LabyrintheController(game);
 
         GameEngineGraphical engine = new GameEngineGraphical(game, painter, controller);
         engine.run();
