@@ -13,7 +13,7 @@ public class SpriteLoader {
     public static BufferedImage get(String nom) {
         if (cache.containsKey(nom)) return cache.get(nom);
         BufferedImage img = null;
-        try (InputStream in = SpriteLoader.class.getResourceAsStream("/images/" + nom)) {
+        try (InputStream in = SpriteLoader.class.getResourceAsStream("/" + nom)) {
             if (in != null) img = ImageIO.read(in);
             else System.err.println("Image introuvable : " + nom);
         } catch (IOException e) {
