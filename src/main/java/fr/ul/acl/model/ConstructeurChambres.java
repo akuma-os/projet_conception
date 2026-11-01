@@ -40,18 +40,32 @@ public class ConstructeurChambres {
         return chambres;
     }
 
+    
     private static Chambre creerChambre(int id, int[][] grille) {
+
         Chambre chambre = new Chambre(id, "Chambre " + id, grille);
+
         TypeDecor[] themes = THEMES[id];
+
         for (int y = 0; y < grille.length; y++) {
             for (int x = 0; x < grille[y].length; x++) {
+
                 if (grille[y][x] == 2) {
-                    chambre.ajouterDecor(new Decor(themes[(x + y) % themes.length], x, y));
+                    chambre.ajouterDecor(
+                        new Decor(themes[(x + y) % themes.length], x, y)
+                    );
                 }
             }
         }
+
+        // Ajouter une porte de sortie pour les chambres 0, 1 et 2
+        if (id < 3) {
+            chambre.ajouterPorte(grille[0].length - 2, 1);
+        }
+
         return chambre;
     }
+
 
     private static int[][] genererGrille(int taille, int variante) {
         int[][] grille = new int[taille][taille];

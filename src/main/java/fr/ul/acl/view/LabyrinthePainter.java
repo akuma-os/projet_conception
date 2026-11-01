@@ -20,15 +20,30 @@ public class LabyrinthePainter implements GamePainter {
     // =====================================================
     // 1. CONFIGURATION GENERALE
     // =====================================================
-	
+
     public static final int TAILLE_CASE = 30;
     public static final int TAILLE_FENETRE = 600;
-    private final int TAILLE_HEROS =(int) (TAILLE_CASE *3);
+
+    private final int TAILLE_HEROS = (int) (TAILLE_CASE * 3);
+
     private static final Color COULEUR_FOND =
-        new Color(121, 168, 75);
+            new Color(121, 168, 75);
 
     private static final Color COULEUR_MUR =
-        new Color(121, 83, 51);
+            new Color(121, 83, 51);
+
+    // Couleurs de la porte
+    private static final Color COULEUR_CONTOUR_PORTE =
+            new Color(65, 35, 20);
+
+    private static final Color COULEUR_PORTE =
+            new Color(139, 69, 19);
+
+    private static final Color COULEUR_PLANCHES =
+            new Color(105, 50, 18);
+
+    private static final Color COULEUR_POIGNEE =
+            new Color(255, 215, 0);
 
     private final LabyrintheGame game;
 
@@ -36,19 +51,11 @@ public class LabyrinthePainter implements GamePainter {
     // 2. CONFIGURATION DES SPRITESHEETS
     // =====================================================
 
-    // Chemins des images dans src/main/resources
     private static final String IDLE_PATH =
-        "/Swordsman_lvl1_Idle_with_shadow.png";
+            "/Swordsman_lvl1_Idle_with_shadow.png";
 
     private static final String WALK_PATH =
             "/Swordsman_lvl1_Walk_with_shadow.png";
-
-
-    // -----------------------------------------------------
-    // DIMENSIONS D'UNE FRAME
-    // -----------------------------------------------------
-
-    // A MODIFIER selon les dimensions de ton spritesheet
 
     private static final int IDLE_FRAME_WIDTH = 64;
     private static final int IDLE_FRAME_HEIGHT = 64;
@@ -56,33 +63,14 @@ public class LabyrinthePainter implements GamePainter {
     private static final int WALK_FRAME_WIDTH = 64;
     private static final int WALK_FRAME_HEIGHT = 64;
 
-
-    // -----------------------------------------------------
-    // NOMBRE DE FRAMES
-    // -----------------------------------------------------
-
-    // Nombre de poses de marche sur une ligne
-
     private static final int[] WALK_FRAME_COUNTS = {
-    12,  // ligne 0
-    12,  // ligne 1
-    12,  // ligne 2
-    4    // ligne 3
-   };
+            12,
+            12,
+            12,
+            4
+    };
 
-
-    // -----------------------------------------------------
-    // ORGANISATION DES DIRECTIONS
-    // -----------------------------------------------------
-
-    /*
-     * Indices des lignes dans les spritesheets.
-     *
-     * ATTENTION :
-     * Ces valeurs sont des exemples.
-     * Il faut les adapter à l'organisation réelle des PNG.
-     */
-
+    // Directions
     private static final int IDLE_ROW_DOWN = 0;
     private static final int IDLE_ROW_LEFT = 1;
     private static final int IDLE_ROW_RIGHT = 2;
@@ -93,22 +81,12 @@ public class LabyrinthePainter implements GamePainter {
     private static final int WALK_ROW_RIGHT = 2;
     private static final int WALK_ROW_UP = 3;
 
-
-    // -----------------------------------------------------
-    // POSITION INITIALE DES SPRITES DANS LES PNG
-    // -----------------------------------------------------
-
-    // Si le spritesheet commence directement par une frame :
-    // laisser ces valeurs à 0.
-
+    // Position initiale des sprites
     private static final int IDLE_START_X = 0;
     private static final int IDLE_START_Y = 0;
 
     private static final int WALK_START_X = 0;
     private static final int WALK_START_Y = 0;
-
-    // Espace éventuel entre deux frames
-    // Mettre 0 si les frames sont collées.
 
     private static final int IDLE_GAP_X = 0;
     private static final int IDLE_GAP_Y = 0;
@@ -116,17 +94,12 @@ public class LabyrinthePainter implements GamePainter {
     private static final int WALK_GAP_X = 0;
     private static final int WALK_GAP_Y = 0;
 
-
     // =====================================================
     // 3. CONFIGURATION DE L'ANIMATION
     // =====================================================
 
-    // Temps entre deux frames, en millisecondes
     private static final long ANIMATION_SPEED = 120;
-
-    // Durée pendant laquelle on considère le héros en mouvement
     private static final long MOVEMENT_TIMEOUT = 250;
-
 
     // =====================================================
     // 4. IMAGES ET VARIABLES D'ANIMATION
@@ -136,7 +109,6 @@ public class LabyrinthePainter implements GamePainter {
     private BufferedImage walkSheet;
 
     private int frameActuelle = 0;
-
     private int directionActuelle = IDLE_ROW_DOWN;
 
     private int ancienneX = -1;
@@ -144,7 +116,6 @@ public class LabyrinthePainter implements GamePainter {
 
     private long dernierDeplacement = 0;
     private long dernierChangementFrame = 0;
-
 
     // =====================================================
     // 5. CONSTRUCTEUR
@@ -157,7 +128,6 @@ public class LabyrinthePainter implements GamePainter {
         idleSheet = chargerImage(IDLE_PATH);
         walkSheet = chargerImage(WALK_PATH);
     }
-
 
     // =====================================================
     // 6. CHARGEMENT DES IMAGES
@@ -182,7 +152,6 @@ public class LabyrinthePainter implements GamePainter {
         }
     }
 
-
     // =====================================================
     // 7. DETECTION DE LA DIRECTION
     // =====================================================
@@ -197,23 +166,18 @@ public class LabyrinthePainter implements GamePainter {
 
         if (x > ancienneX) {
             directionActuelle = WALK_ROW_RIGHT;
-        }
-        else if (x < ancienneX) {
+        } else if (x < ancienneX) {
             directionActuelle = WALK_ROW_LEFT;
-        }
-        else if (y > ancienneY) {
+        } else if (y > ancienneY) {
             directionActuelle = WALK_ROW_DOWN;
-        }
-        else if (y < ancienneY) {
+        } else if (y < ancienneY) {
             directionActuelle = WALK_ROW_UP;
         }
 
-        // Si la position a changé, le héros a bougé
         if (x != ancienneX || y != ancienneY) {
 
             dernierDeplacement = System.currentTimeMillis();
 
-            // Recommencer l'animation depuis la première frame
             frameActuelle = 0;
             dernierChangementFrame = dernierDeplacement;
         }
@@ -221,7 +185,6 @@ public class LabyrinthePainter implements GamePainter {
         ancienneX = x;
         ancienneY = y;
     }
-
 
     // =====================================================
     // 8. MISE A JOUR DE L'ANIMATION
@@ -235,7 +198,6 @@ public class LabyrinthePainter implements GamePainter {
                 < MOVEMENT_TIMEOUT;
     }
 
-
     private void mettreAJourAnimation() {
 
         long maintenant = System.currentTimeMillis();
@@ -245,34 +207,34 @@ public class LabyrinthePainter implements GamePainter {
             if (maintenant - dernierChangementFrame
                     >= ANIMATION_SPEED) {
 
-                int nombreFrames = WALK_FRAME_COUNTS[directionActuelle];
+                int nombreFrames =
+                        WALK_FRAME_COUNTS[directionActuelle];
 
-				frameActuelle =(frameActuelle + 1) % nombreFrames;
+                frameActuelle =
+                        (frameActuelle + 1) % nombreFrames;
 
                 dernierChangementFrame = maintenant;
             }
 
         } else {
 
-            // Le héros est immobile
             frameActuelle = 0;
         }
     }
-
 
     // =====================================================
     // 9. DESSIN DU HEROS
     // =====================================================
 
-    private void dessinerHeros(Graphics2D crayon, Heros heros, int tailleCase) {
+    private void dessinerHeros(
+            Graphics2D crayon,
+            Heros heros,
+            int tailleCase) {
 
         int x = heros.getX();
         int y = heros.getY();
 
-        // Détecter la direction et le déplacement
         detecterDirection(x, y);
-
-        // Actualiser l'animation
         mettreAJourAnimation();
 
         BufferedImage image;
@@ -286,7 +248,6 @@ public class LabyrinthePainter implements GamePainter {
 
         if (estEnMouvement()) {
 
-            // Animation de marche
             image = walkSheet;
 
             frameWidth = WALK_FRAME_WIDTH;
@@ -302,7 +263,6 @@ public class LabyrinthePainter implements GamePainter {
 
         } else {
 
-            // Animation immobile
             image = idleSheet;
 
             frameWidth = IDLE_FRAME_WIDTH;
@@ -314,20 +274,15 @@ public class LabyrinthePainter implements GamePainter {
             gapX = IDLE_GAP_X;
             gapY = IDLE_GAP_Y;
 
-            // La ligne idle correspond à la direction actuelle
             ligne = directionActuelle;
         }
 
-
-        // Calcul des coordonnées de la frame dans le PNG
         int sourceX = startX
                 + frameActuelle * (frameWidth + gapX);
 
         int sourceY = startY
                 + ligne * (frameHeight + gapY);
 
-
-        // Vérifier que la frame demandée existe dans le PNG
         if (sourceX < 0 || sourceY < 0
                 || sourceX + frameWidth > image.getWidth()
                 || sourceY + frameHeight > image.getHeight()) {
@@ -335,107 +290,212 @@ public class LabyrinthePainter implements GamePainter {
             return;
         }
 
+        int tailleHeros = (int) Math.round(
+                tailleCase * (TAILLE_HEROS / (double) TAILLE_CASE));
 
-        // Position du personnage dans le labyrinthe
-		int tailleHeros = (int) Math.round(tailleCase * (TAILLE_HEROS / (double) TAILLE_CASE));
-		int destinationX = x * tailleCase - (tailleHeros - tailleCase) / 2;
+        int destinationX = x * tailleCase
+                - (tailleHeros - tailleCase) / 2;
 
-		int destinationY = y * tailleCase - (tailleHeros - tailleCase) / 2;
+        int destinationY = y * tailleCase
+                - (tailleHeros - tailleCase) / 2;
 
-		// Dessiner le sprite agrandi et centré dans sa case
-		crayon.drawImage(
-		image,
-		destinationX,
-		destinationY,
-		destinationX + tailleHeros,
-		destinationY + tailleHeros,
-        sourceX,
-        sourceY,
-        sourceX + frameWidth,
-        sourceY + frameHeight,
-        null
-		);
+        crayon.drawImage(
+                image,
+                destinationX,
+                destinationY,
+                destinationX + tailleHeros,
+                destinationY + tailleHeros,
+                sourceX,
+                sourceY,
+                sourceX + frameWidth,
+                sourceY + frameHeight,
+                null
+        );
     }
 
+    // =====================================================
+    // 10. DESSIN DE LA PORTE
+    // =====================================================
+
+    private void dessinerPorte(
+            Graphics2D crayon,
+            int x,
+            int y,
+            int tailleCase) {
+
+        int largeurPorte = tailleCase * 3 / 5;
+        int hauteurPorte = tailleCase * 4 / 5;
+
+        int porteX = x * tailleCase
+                + (tailleCase - largeurPorte) / 2;
+
+        int porteY = y * tailleCase
+                + (tailleCase - hauteurPorte) / 2;
+
+        // Encadrement extérieur
+        crayon.setColor(COULEUR_CONTOUR_PORTE);
+
+        crayon.fillRect(
+                porteX - 2,
+                porteY - 2,
+                largeurPorte + 4,
+                hauteurPorte + 4
+        );
+
+        // Surface de la porte
+        crayon.setColor(COULEUR_PORTE);
+
+        crayon.fillRect(
+                porteX,
+                porteY,
+                largeurPorte,
+                hauteurPorte
+        );
+
+        // Planches verticales
+        crayon.setColor(COULEUR_PLANCHES);
+
+        crayon.drawLine(
+                porteX + largeurPorte / 3,
+                porteY + 2,
+                porteX + largeurPorte / 3,
+                porteY + hauteurPorte - 2
+        );
+
+        crayon.drawLine(
+                porteX + 2 * largeurPorte / 3,
+                porteY + 2,
+                porteX + 2 * largeurPorte / 3,
+                porteY + hauteurPorte - 2
+        );
+
+        // Poignée dorée
+        int taillePoignee = Math.max(3, tailleCase / 8);
+
+        crayon.setColor(COULEUR_POIGNEE);
+
+        crayon.fillOval(
+                porteX + largeurPorte * 3 / 4,
+                porteY + hauteurPorte / 2,
+                taillePoignee,
+                taillePoignee
+        );
+    }
 
     // =====================================================
-    // 10. DESSIN DU LABYRINTHE
+    // 11. DESSIN DU LABYRINTHE
     // =====================================================
 
-    
-@Override
-public void draw(BufferedImage im) {
+    @Override
+    public void draw(BufferedImage im) {
 
-    Graphics2D crayon = (Graphics2D) im.getGraphics();
+        Graphics2D crayon = (Graphics2D) im.getGraphics();
 
-    crayon.setRenderingHint(
-            RenderingHints.KEY_INTERPOLATION,
-            RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR
-    );
+        crayon.setRenderingHint(
+                RenderingHints.KEY_INTERPOLATION,
+                RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR
+        );
 
-    Labyrinthe labyrinthe = game.getLabyrinthe();
-    Heros heros = game.getHeros();
+        Labyrinthe labyrinthe = game.getLabyrinthe();
+        Heros heros = game.getHeros();
 
-    int largeurEcran = im.getWidth();
-    int hauteurEcran = im.getHeight();
+        int largeurEcran = im.getWidth();
+        int hauteurEcran = im.getHeight();
 
-    // Calculer une taille de case adaptée aux deux dimensions
-    int tailleCase = Math.min(
-            largeurEcran / labyrinthe.getLargeur(),
-            hauteurEcran / labyrinthe.getHauteur()
-    );
+        // Calcul de la taille des cases
+        int tailleCase = Math.min(
+                largeurEcran / labyrinthe.getLargeur(),
+                hauteurEcran / labyrinthe.getHauteur()
+        );
 
-    // Centrer le labyrinthe dans la fenêtre
-    int largeurLabyrinthe = tailleCase * labyrinthe.getLargeur();
-    int hauteurLabyrinthe = tailleCase * labyrinthe.getHauteur();
+        // Centrage du labyrinthe
+        int largeurLabyrinthe =
+                tailleCase * labyrinthe.getLargeur();
 
-    int offsetX = (largeurEcran - largeurLabyrinthe) / 2;
-    int offsetY = (hauteurEcran - hauteurLabyrinthe) / 2;
+        int hauteurLabyrinthe =
+                tailleCase * labyrinthe.getHauteur();
 
-    // Fond de la fenêtre
-    crayon.setColor(COULEUR_FOND);
-    crayon.fillRect(0, 0, largeurEcran, hauteurEcran);
+        int offsetX =
+                (largeurEcran - largeurLabyrinthe) / 2;
 
-    // Décaler le système de coordonnées pour centrer le labyrinthe
-    crayon.translate(offsetX, offsetY);
+        int offsetY =
+                (hauteurEcran - hauteurLabyrinthe) / 2;
 
-    // Dessiner les murs
-    crayon.setColor(COULEUR_MUR);
+        // Fond
+        crayon.setColor(COULEUR_FOND);
 
-    for (int y = 0; y < labyrinthe.getHauteur(); y++) {
-        for (int x = 0; x < labyrinthe.getLargeur(); x++) {
-            if (labyrinthe.estMur(x, y)) {
-                crayon.fillRect(
-                        x * tailleCase,
-                        y * tailleCase,
-                        tailleCase,
-                        tailleCase
-                );
+        crayon.fillRect(
+                0,
+                0,
+                largeurEcran,
+                hauteurEcran
+        );
+
+        crayon.translate(offsetX, offsetY);
+
+        // Dessiner les murs
+        crayon.setColor(COULEUR_MUR);
+
+        for (int y = 0; y < labyrinthe.getHauteur(); y++) {
+
+            for (int x = 0; x < labyrinthe.getLargeur(); x++) {
+
+                if (labyrinthe.estMur(x, y)) {
+
+                    crayon.fillRect(
+                            x * tailleCase,
+                            y * tailleCase,
+                            tailleCase,
+                            tailleCase
+                    );
+                }
             }
         }
+
+        // Dessiner les portes
+        for (int y = 0; y < labyrinthe.getHauteur(); y++) {
+
+            for (int x = 0; x < labyrinthe.getLargeur(); x++) {
+
+                if (labyrinthe.estPorte(x, y)) {
+
+                    dessinerPorte(
+                            crayon,
+                            x,
+                            y,
+                            tailleCase
+                    );
+                }
+            }
+        }
+
+        // Dessiner les décors et les ressources
+        DecorPainter.dessiner(
+                crayon,
+                labyrinthe.getDecors(),
+                tailleCase
+        );
+
+        RessourcePainter.dessiner(
+                crayon,
+                labyrinthe.getRessources(),
+                tailleCase
+        );
+
+        // Dessiner le héros
+        dessinerHeros(crayon, heros, tailleCase);
+
+        crayon.dispose();
     }
 
-    // Dessiner les décors et les ressources
-    DecorPainter.dessiner(crayon, labyrinthe.getDecors(), tailleCase);
-    RessourcePainter.dessiner(crayon, labyrinthe.getRessources(), tailleCase);
-
-    // Dessiner le héros
-    dessinerHeros(crayon, heros, tailleCase);
-
-    crayon.dispose();
-}
-
-
-
     // =====================================================
-    // 11. DIMENSIONS DE LA FENETRE
+    // 12. DIMENSIONS DE LA FENETRE
     // =====================================================
 
     @Override
     public int getWidth() {
         return TAILLE_FENETRE;
     }
-
 
     @Override
     public int getHeight() {

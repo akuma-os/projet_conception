@@ -1,18 +1,20 @@
+
 package fr.ul.acl.model;
 
 import java.util.List;
 
 public class Labyrinthe {
+
     private final List<Chambre> chambres;
     private Chambre chambreCourante;
 
     public Labyrinthe() {
-        this(3);
+        this(0);
     }
 
     public Labyrinthe(int idChambreInitiale) {
         this.chambres = ConstructeurChambres.creerChambresParDefaut();
-        this.chambreCourante = this.chambres.get(3);
+        this.chambreCourante = this.chambres.get(0);
         changerChambre(idChambreInitiale);
     }
 
@@ -35,6 +37,7 @@ public class Labyrinthe {
 
     public void changerChambre(int id) {
         Chambre chambre = getChambre(id);
+
         if (chambre != null) {
             chambreCourante = chambre;
         }
@@ -58,6 +61,11 @@ public class Labyrinthe {
 
     public boolean estMur(int x, int y) {
         return chambreCourante.estMur(x, y);
+    }
+
+    // Vérifie si une case correspond à une porte
+    public boolean estPorte(int x, int y) {
+        return chambreCourante.estPorte(x, y);
     }
 
     public boolean estObstacle(int x, int y) {
