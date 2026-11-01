@@ -20,12 +20,15 @@ public class LabyrinthePainter implements GamePainter {
     // =====================================================
     // 1. CONFIGURATION GENERALE
     // =====================================================
-	private static final int TAILLE_HEROS = 50;
+	
     public static final int TAILLE_CASE = 30;
     public static final int TAILLE_FENETRE = 600;
+    private final int TAILLE_HEROS =(int) (TAILLE_CASE *3);
+    private static final Color COULEUR_FOND =
+        new Color(121, 168, 75);
 
-    private static final Color COULEUR_FOND = Color.BLACK;
-    private static final Color COULEUR_MUR = Color.GRAY;
+    private static final Color COULEUR_MUR =
+        new Color(121, 83, 51);
 
     private final LabyrintheGame game;
 
@@ -359,61 +362,69 @@ public class LabyrinthePainter implements GamePainter {
     // 10. DESSIN DU LABYRINTHE
     // =====================================================
 
-    @Override
-    public void draw(BufferedImage im) {
+    
+@Override
+public void draw(BufferedImage im) {
 
-        Graphics2D crayon = (Graphics2D) im.getGraphics();
+    Graphics2D crayon = (Graphics2D) im.getGraphics();
 
-        // Garder les contours pixel art nets
-        crayon.setRenderingHint(
-                RenderingHints.KEY_INTERPOLATION,
-                RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR
-        );
+    crayon.setRenderingHint(
+            RenderingHints.KEY_INTERPOLATION,
+            RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR
+    );
 
-        Labyrinthe labyrinthe = game.getLabyrinthe();
-        Heros heros = game.getHeros();
-        int tailleCase = getWidth() / labyrinthe.getLargeur();
+    Labyrinthe labyrinthe = game.getLabyrinthe();
+    Heros heros = game.getHeros();
 
+    int largeurEcran = im.getWidth();
+    int hauteurEcran = im.getHeight();
 
-        // 1. Fond noir
-        crayon.setColor(COULEUR_FOND);
+    // Calculer une taille de case adaptée aux deux dimensions
+    int tailleCase = Math.min(
+            largeurEcran / labyrinthe.getLargeur(),
+            hauteurEcran / labyrinthe.getHauteur()
+    );
 
-        crayon.fillRect(
-                0,
-                0,
-                getWidth(),
-                getHeight()
-        );
+    // Centrer le labyrinthe dans la fenêtre
+    int largeurLabyrinthe = tailleCase * labyrinthe.getLargeur();
+    int hauteurLabyrinthe = tailleCase * labyrinthe.getHauteur();
 
+    int offsetX = (largeurEcran - largeurLabyrinthe) / 2;
+    int offsetY = (hauteurEcran - hauteurLabyrinthe) / 2;
 
-        // 2. Dessiner les murs
-        crayon.setColor(COULEUR_MUR);
+    // Fond de la fenêtre
+    crayon.setColor(COULEUR_FOND);
+    crayon.fillRect(0, 0, largeurEcran, hauteurEcran);
 
-        for (int y = 0; y < labyrinthe.getHauteur(); y++) {
+    // Décaler le système de coordonnées pour centrer le labyrinthe
+    crayon.translate(offsetX, offsetY);
 
-            for (int x = 0; x < labyrinthe.getLargeur(); x++) {
+    // Dessiner les murs
+    crayon.setColor(COULEUR_MUR);
 
-                if (labyrinthe.estMur(x, y)) {
-
-                    crayon.fillRect(
-                            x * tailleCase,
-                            y * tailleCase,
-                            tailleCase,
-                            tailleCase
-                    );
-                }
+    for (int y = 0; y < labyrinthe.getHauteur(); y++) {
+        for (int x = 0; x < labyrinthe.getLargeur(); x++) {
+            if (labyrinthe.estMur(x, y)) {
+                crayon.fillRect(
+                        x * tailleCase,
+                        y * tailleCase,
+                        tailleCase,
+                        tailleCase
+                );
             }
         }
-
-        DecorPainter.dessiner(crayon, labyrinthe.getDecors(), tailleCase);
-        RessourcePainter.dessiner(crayon, labyrinthe.getRessources(), tailleCase);
-
-        // 3. Dessiner le héros animé
-        dessinerHeros(crayon, heros, tailleCase);
-
-
-        crayon.dispose();
     }
+
+    // Dessiner les décors et les ressources
+    DecorPainter.dessiner(crayon, labyrinthe.getDecors(), tailleCase);
+    RessourcePainter.dessiner(crayon, labyrinthe.getRessources(), tailleCase);
+
+    // Dessiner le héros
+    dessinerHeros(crayon, heros, tailleCase);
+
+    crayon.dispose();
+}
+
 
 
     // =====================================================

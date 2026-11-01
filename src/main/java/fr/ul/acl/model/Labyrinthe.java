@@ -7,12 +7,12 @@ public class Labyrinthe {
     private Chambre chambreCourante;
 
     public Labyrinthe() {
-        this(0);
+        this(3);
     }
 
     public Labyrinthe(int idChambreInitiale) {
         this.chambres = ConstructeurChambres.creerChambresParDefaut();
-        this.chambreCourante = this.chambres.get(0);
+        this.chambreCourante = this.chambres.get(3);
         changerChambre(idChambreInitiale);
     }
 
