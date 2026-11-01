@@ -22,6 +22,7 @@ public class LabyrinthePainter implements GamePainter {
     // =====================================================
 	private static final int TAILLE_HEROS = 50;
     public static final int TAILLE_CASE = 30;
+    public static final int TAILLE_FENETRE = 600;
 
     private static final Color COULEUR_FOND = Color.BLACK;
     private static final Color COULEUR_MUR = Color.GRAY;
@@ -260,7 +261,7 @@ public class LabyrinthePainter implements GamePainter {
     // 9. DESSIN DU HEROS
     // =====================================================
 
-    private void dessinerHeros(Graphics2D crayon, Heros heros) {
+    private void dessinerHeros(Graphics2D crayon, Heros heros, int tailleCase) {
 
         int x = heros.getX();
         int y = heros.getY();
@@ -333,17 +334,18 @@ public class LabyrinthePainter implements GamePainter {
 
 
         // Position du personnage dans le labyrinthe
-		int destinationX = x * TAILLE_CASE- (TAILLE_HEROS - TAILLE_CASE) / 2;
+		int tailleHeros = (int) Math.round(tailleCase * (TAILLE_HEROS / (double) TAILLE_CASE));
+		int destinationX = x * tailleCase - (tailleHeros - tailleCase) / 2;
 
-		int destinationY = y * TAILLE_CASE- (TAILLE_HEROS - TAILLE_CASE) / 2;
+		int destinationY = y * tailleCase - (tailleHeros - tailleCase) / 2;
 
 		// Dessiner le sprite agrandi et centré dans sa case
 		crayon.drawImage(
-        image,
-        destinationX,
-        destinationY,
-        destinationX + TAILLE_HEROS,
-        destinationY + TAILLE_HEROS,
+		image,
+		destinationX,
+		destinationY,
+		destinationX + tailleHeros,
+		destinationY + tailleHeros,
         sourceX,
         sourceY,
         sourceX + frameWidth,
@@ -370,6 +372,7 @@ public class LabyrinthePainter implements GamePainter {
 
         Labyrinthe labyrinthe = game.getLabyrinthe();
         Heros heros = game.getHeros();
+        int tailleCase = getWidth() / labyrinthe.getLargeur();
 
 
         // 1. Fond noir
@@ -393,18 +396,20 @@ public class LabyrinthePainter implements GamePainter {
                 if (labyrinthe.estMur(x, y)) {
 
                     crayon.fillRect(
-                            x * TAILLE_CASE,
-                            y * TAILLE_CASE,
-                            TAILLE_CASE,
-                            TAILLE_CASE
+                            x * tailleCase,
+                            y * tailleCase,
+                            tailleCase,
+                            tailleCase
                     );
                 }
             }
         }
 
+        DecorPainter.dessiner(crayon, labyrinthe.getDecors(), tailleCase);
+        RessourcePainter.dessiner(crayon, labyrinthe.getRessources(), tailleCase);
 
         // 3. Dessiner le héros animé
-        dessinerHeros(crayon, heros);
+        dessinerHeros(crayon, heros, tailleCase);
 
 
         crayon.dispose();
@@ -417,16 +422,12 @@ public class LabyrinthePainter implements GamePainter {
 
     @Override
     public int getWidth() {
-
-        return game.getLabyrinthe().getLargeur()
-                * TAILLE_CASE;
+        return TAILLE_FENETRE;
     }
 
 
     @Override
     public int getHeight() {
-
-        return game.getLabyrinthe().getHauteur()
-                * TAILLE_CASE;
+        return TAILLE_FENETRE;
     }
 }
