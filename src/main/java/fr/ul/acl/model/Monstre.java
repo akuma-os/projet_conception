@@ -28,10 +28,6 @@ public class Monstre {
         return y; 
     }
 
-    /**
-     * Gère le déplacement aléatoire du monstre d'une case.
-     * Utilise la méthode deplacementPossible de votre classe Labyrinthe.
-     */
     public void deplacerAleatoirement(Labyrinthe labyrinthe) {
         // 0: Immobile, 1: Haut, 2: Bas, 3: Gauche, 4: Droite
         int direction = random.nextInt(5); 
