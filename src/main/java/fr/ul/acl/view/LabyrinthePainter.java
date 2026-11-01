@@ -8,7 +8,7 @@ import engine.GamePainter;
 import fr.ul.acl.model.Heros;
 import fr.ul.acl.model.Labyrinthe;
 import fr.ul.acl.model.LabyrintheGame;
-
+import fr.ul.acl.model.Monstre;
 /**
  * Dessine le labyrinthe (fond noir, murs gris) et le heros (carre blanc).
  * Le painter ne modifie jamais le jeu : il lit seulement son etat.
@@ -21,6 +21,7 @@ public class LabyrinthePainter implements GamePainter {
 	private static final Color COULEUR_FOND = Color.BLACK;
 	private static final Color COULEUR_MUR = Color.GRAY;
 	private static final Color COULEUR_HEROS = Color.WHITE;
+	private static final Color COULEUR_MONSTRE = Color.RED;
 
 	/** le jeu a afficher */
 	private final LabyrintheGame game;
@@ -59,7 +60,14 @@ public class LabyrinthePainter implements GamePainter {
 				heros.getY() * TAILLE_CASE + marge,
 				TAILLE_CASE - 2 * marge,
 				TAILLE_CASE - 2 * marge);
-
+		int margeMonstre = 4;
+		crayon.setColor(COULEUR_MONSTRE);
+		for (Monstre monstre : labyrinthe.getMonstres()) {
+			crayon.fillOval(monstre.getX() * TAILLE_CASE + margeMonstre,
+					monstre.getY() * TAILLE_CASE + margeMonstre,
+					TAILLE_CASE - 2 * margeMonstre,
+					TAILLE_CASE - 2 * margeMonstre);
+		}
 		crayon.dispose();
 	}
 

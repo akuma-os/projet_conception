@@ -13,6 +13,7 @@ public class LabyrintheGame implements Game {
     public LabyrintheGame() {
         this.labyrinthe = new Labyrinthe();
         this.heros = new Heros(1, 1); // doit être une case sans mur
+        this.labyrinthe.initialiserMonstres();
     }
 
     @Override
@@ -25,8 +26,10 @@ public class LabyrintheGame implements Game {
             case IDLE:
             default:    break;
         }
+        for (Monstre monstre : this.labyrinthe.getMonstres()) {
+            monstre.deplacerAleatoirement(this.labyrinthe);
     }
-
+    }
     @Override
     public boolean isFinished() {
         return false;
