@@ -1,96 +1,83 @@
 package engine;
-
-/**
- * @author Horatiu Cirstea, Vincent Thomas
- *
- */
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-
 import javax.swing.JPanel;
 
 public class DrawingPanel extends JPanel {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * la clase chargee de Dessiner
-	 */
-	private GamePainter painter;
+    private GamePainter painter;
 
-	/**
-	 * image suivante est l'image cachee sur laquelle dessiner
-	 */
-	private BufferedImage nextImage;
+    private BufferedImage nextImage;
+    private BufferedImage currentImage;
 
-	/**
-	 * image en cours est l'image entrain d'etre affichee
-	 */
-	private BufferedImage currentImage;
+    private int width;
+    private int height;
 
-	/**
-	 * la taille des images
-	 */
-	private int width, height;
+    public DrawingPanel(GamePainter painter) {
+        super();
 
-	/**
-	 * constructeur Il construit les images pour doublebuffering ainsi que le
-	 * Panel associe. Les images stockent le painter et on demande au panel la
-	 * mise a jour quand le painter est fini
-	 * 
-	 * @param width
-	 *            largeur de l'image
-	 * @param height
-	 *            hauteur de l'image
-	 */
-	public DrawingPanel(GamePainter painter) {
-		super();
-		this.width = painter.getWidth();
-		this.height = painter.getHeight();
-		this.setPreferredSize(new Dimension(this.width, this.height));
-		this.painter=painter;
+        this.painter = painter;
 
-		// cree l'image buffer et son graphics
-		this.nextImage = new BufferedImage(width, height,
-				BufferedImage.TYPE_INT_RGB);
-		this.currentImage = new BufferedImage(width, height,
-				BufferedImage.TYPE_INT_RGB);
-	}
+        this.width = painter.getWidth();
+        this.height = painter.getHeight();
 
-	/**
-	 * demande de mettre a jour le rendu de l'image sur le Panel. Creer une
-	 * nouvelle image vide sur laquelle dessiner
-	 */
-	public void drawGame() {
-		// generer la nouvelle image
-		this.painter.draw(this.nextImage);
+        setPreferredSize(new Dimension(width, height));
+        setFocusable(true);
 
-		// inverses les images doublebuffereing
-		BufferedImage temp = this.currentImage;
-		// l'image a dessiner est celle qu'on a construite
-		this.currentImage = this.nextImage;
-		// l'ancienne image est videe
-		this.nextImage = temp;
-		this.nextImage.getGraphics()
-				.fillRect(0, 0, this.width, this.height);
-		// met a jour l'image a afficher sur le panel
-		this.repaint();
-	}
+        nextImage = new BufferedImage(
+                width, height, BufferedImage.TYPE_INT_RGB);
 
-	/**
-	 * redefinit la methode paint consiste a dessiner l'image en cours
-	 * 
-	 * @param g
-	 *            graphics pour dessiner
-	 */
-	public void paint(Graphics g) {
-		super.paint(g);
-		g.drawImage(this.currentImage, 0, 0, getWidth(), getHeight(), 0, 0,
-				getWidth(), getHeight(), null);
-	}
+        currentImage = new BufferedImage(
+                width, height, BufferedImage.TYPE_INT_RGB);
+    }
 
+    public void drawGame() {
+
+        int newWidth = getWidth();
+        int newHeight = getHeight();
+
+        if (newWidth <= 0 || newHeight <= 0) {
+            return;
+        }
+
+        // Adapter les images à la taille réelle du panneau
+        if (nextImage.getWidth() != newWidth
+                || nextImage.getHeight() != newHeight) {
+
+            width = newWidth;
+            height = newHeight;
+
+            nextImage = new BufferedImage(
+                    width, height, BufferedImage.TYPE_INT_RGB);
+
+            currentImage = new BufferedImage(
+                    width, height, BufferedImage.TYPE_INT_RGB);
+        }
+
+        painter.draw(nextImage);
+
+        BufferedImage temp = currentImage;
+        currentImage = nextImage;
+        nextImage = temp;
+
+        Graphics2D g = nextImage.createGraphics();
+        g.setColor(getBackground());
+        g.fillRect(0, 0, width, height);
+        g.dispose();
+
+        repaint();
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        if (currentImage != null) {
+            g.drawImage(currentImage, 0, 0, null);
+        }
+    }
 }

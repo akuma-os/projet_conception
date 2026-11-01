@@ -1,43 +1,74 @@
-//Grille fixe, murs, limites et validation des déplacements.
 package fr.ul.acl.model;
 
-public class Labyrinthe {
-    private final int[][] grille = {
-        {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-        {1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1},
-        {1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1},
-        {1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1},
-        {1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1},
-        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-        {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}
-    }; // 0 = espace libre, 1 = mur
+import java.util.List;
 
-    private final int hauteur = grille.length;
-    private final int largeur = grille[0].length;
+public class Labyrinthe {
+    private final List<Chambre> chambres;
+    private Chambre chambreCourante;
+
+    public Labyrinthe() {
+        this(3);
+    }
+
+    public Labyrinthe(int idChambreInitiale) {
+        this.chambres = ConstructeurChambres.creerChambresParDefaut();
+        this.chambreCourante = this.chambres.get(3);
+        changerChambre(idChambreInitiale);
+    }
+
+    public Chambre getChambreCourante() {
+        return chambreCourante;
+    }
+
+    public List<Chambre> getChambres() {
+        return chambres;
+    }
+
+    public Chambre getChambre(int id) {
+        for (Chambre chambre : chambres) {
+            if (chambre.getId() == id) {
+                return chambre;
+            }
+        }
+        return null;
+    }
+
+    public void changerChambre(int id) {
+        Chambre chambre = getChambre(id);
+        if (chambre != null) {
+            chambreCourante = chambre;
+        }
+    }
 
     public int getHauteur() {
-        return hauteur;
+        return chambreCourante.getHauteur();
     }
 
     public int getLargeur() {
-        return largeur;
+        return chambreCourante.getLargeur();
     }
-    
+
     public int[][] getGrille() {
-        return grille;
+        return chambreCourante.getGrille();
     }
-    
+
     public boolean deplacementPossible(int x, int y) {
-        if (x < 0 || x >= largeur || y < 0 || y >= hauteur) {
-            return false;
-        }
-        return grille[y][x] == 0;
+        return chambreCourante.deplacementPossible(x, y);
     }
-    
+
     public boolean estMur(int x, int y) {
-        if (x < 0 || x >= largeur || y < 0 || y >= hauteur) {
-            return false;
-        }
-        return grille[y][x] == 1;
+        return chambreCourante.estMur(x, y);
+    }
+
+    public boolean estObstacle(int x, int y) {
+        return chambreCourante.estObstacle(x, y);
+    }
+
+    public List<Decor> getDecors() {
+        return chambreCourante.getDecors();
+    }
+
+    public List<Ressource> getRessources() {
+        return chambreCourante.getRessources();
     }
 }

@@ -1,7 +1,9 @@
-//Traduit les touches du clavier en commandes reconnues par le moteur.
+
 package fr.ul.acl.controller;
 
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 import engine.Cmd;
 import engine.GameController;
@@ -9,7 +11,9 @@ import fr.ul.acl.model.LabyrintheGame;
 
 public class LabyrintheController implements GameController {
 
-    private Cmd currentCommand;
+    // Mémorise les touches actuellement maintenues
+    private final List<Integer> touchesAppuyees = new ArrayList<>();
+
     private final LabyrintheGame game;
 
     public LabyrintheController() {
@@ -18,43 +22,56 @@ public class LabyrintheController implements GameController {
 
     public LabyrintheController(LabyrintheGame game) {
         this.game = game;
-        this.currentCommand = Cmd.IDLE;
     }
 
     @Override
-    public Cmd getCommand() {
-        return currentCommand;
-    }
+    public synchronized void keyPressed(KeyEvent event) {
 
-    @Override
-    public void keyPressed(KeyEvent event) {
-        switch (event.getKeyCode()) {
-            case KeyEvent.VK_LEFT:
-            case KeyEvent.VK_Q:
-                currentCommand = Cmd.LEFT;
-                break;
-            case KeyEvent.VK_RIGHT:
-            case KeyEvent.VK_D:
-                currentCommand = Cmd.RIGHT;
-                break;
-            case KeyEvent.VK_UP:
-            case KeyEvent.VK_Z:
-            case KeyEvent.VK_W:
-                currentCommand = Cmd.UP;
-                break;
-            case KeyEvent.VK_DOWN:
-            case KeyEvent.VK_S:
-                currentCommand = Cmd.DOWN;
-                break;
-            default:
-                currentCommand = Cmd.IDLE;
-                break;
+        int touche = event.getKeyCode();
+
+        // Évite les doublons dus à la répétition automatique du clavier
+        if (!touchesAppuyees.contains(touche)) {
+            touchesAppuyees.add(touche);
         }
     }
 
     @Override
-    public void keyReleased(KeyEvent event) {
-        currentCommand = Cmd.IDLE;
+    public synchronized void keyReleased(KeyEvent event) {
+
+        // On retire uniquement la touche relâchée
+        touchesAppuyees.remove(Integer.valueOf(event.getKeyCode()));
+    }
+
+    @Override
+    public synchronized Cmd getCommand() {
+
+        // On parcourt les touches de la plus récente à la plus ancienne
+        for (int i = touchesAppuyees.size() - 1; i >= 0; i--) {
+
+            int touche = touchesAppuyees.get(i);
+
+            switch (touche) {
+
+                case KeyEvent.VK_LEFT:
+                case KeyEvent.VK_Q:
+                    return Cmd.LEFT;
+
+                case KeyEvent.VK_RIGHT:
+                case KeyEvent.VK_D:
+                    return Cmd.RIGHT;
+
+                case KeyEvent.VK_UP:
+                case KeyEvent.VK_Z:
+                case KeyEvent.VK_W:
+                    return Cmd.UP;
+
+                case KeyEvent.VK_DOWN:
+                case KeyEvent.VK_S:
+                    return Cmd.DOWN;
+            }
+        }
+
+        return Cmd.IDLE;
     }
 
     @Override
@@ -62,4 +79,3 @@ public class LabyrintheController implements GameController {
         // Aucune action spécifique n'est nécessaire ici.
     }
 }
-
