@@ -8,8 +8,8 @@ public class GestionnaireProgression {
     private BanqueQuestions banqueQuestions;
     private Questionnaire questionnaireActuel;
 
-    // Numéro de la chambre actuelle : 1, 2, 3 ou 4
-    private int numeroChambre;
+    // ID de la chambre actuelle : 0, 1, 2, 3 
+    private int idChambreActuelle;
 
     // Etat de la progression
     private boolean missionTerminee;
@@ -30,7 +30,7 @@ public class GestionnaireProgression {
 
         this.banqueQuestions = banqueQuestions;
 
-        numeroChambre = 1;
+        idChambreActuelle = 0;
 
         missionTerminee = false;
         questionnaireReussi = false;
@@ -48,18 +48,18 @@ public class GestionnaireProgression {
 
     public Question.Categorie getCategorieChambre() {
 
-        switch (numeroChambre) {
+        switch (idChambreActuelle) {
 
-            case 1:
+            case 0:
                 return Question.Categorie.MATHEMATIQUES;
 
-            case 2:
+            case 1:
                 return Question.Categorie.CULTURE_GENERALE;
 
-            case 3:
+            case 2:
                 return Question.Categorie.ACL;
 
-            case 4:
+            case 3:
                 return null;
 
             default:
@@ -106,7 +106,7 @@ public class GestionnaireProgression {
             );
         }
 
-        if (numeroChambre == 4) {
+        if (idChambreActuelle == 3) {
             throw new IllegalStateException(
                     "La chambre finale ne possède pas de questionnaire."
             );
@@ -122,7 +122,7 @@ public class GestionnaireProgression {
                 banqueQuestions.getQuestions(categorie);
 
         questionnaireActuel = new Questionnaire(
-                "Questionnaire chambre " + numeroChambre,
+                "Questionnaire chambre " + idChambreActuelle,
                 categorie,
                 questions
         );
@@ -189,11 +189,11 @@ public class GestionnaireProgression {
             return false;
         }
 
-        if (numeroChambre >= 4) {
+        if (idChambreActuelle >= 3) {
             return false;
         }
 
-        numeroChambre++;
+        idChambreActuelle++;
 
         reinitialiserProgressionChambre();
 
@@ -220,8 +220,8 @@ public class GestionnaireProgression {
     // GETTERS
     // =====================================================
 
-    public int getNumeroChambre() {
-        return numeroChambre;
+    public int getIdChambreActuelle() {
+        return idChambreActuelle;
     }
 
     public boolean estMissionTerminee() {

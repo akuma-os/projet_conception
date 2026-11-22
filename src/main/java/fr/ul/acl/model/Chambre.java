@@ -17,7 +17,7 @@ public class Chambre {
     private final int largeur;
     private final List<Decor> decors = new ArrayList<>();
     private final List<Ressource> ressources = new ArrayList<>();
-
+    private Porte porte;
     public Chambre(int id, String nom, int[][] grille) {
         this.id = id;
         this.nom = nom;
@@ -71,23 +71,19 @@ public class Chambre {
     public void ajouterRessource(Ressource ressource) {
         ressources.add(ressource);
     }
-    // Ajouter une porte sur une case libre
+    // Créer une porte, initialement inaccessible
     public void ajouterPorte(int x, int y) {
-        if (x >= 0 && x < largeur
-                && y >= 0 && y < hauteur
-                && grille[y][x] == CASE_LIBRE) {
-            grille[y][x] = PORTE;
-        }
-    }
 
-    // Vérifier si une case est une porte
-    public boolean estPorte(int x, int y) {
-        if (x < 0 || x >= largeur || y < 0 || y >= hauteur) {
-            return false;
+        if (x < 0 || x >= largeur
+                || y < 0 || y >= hauteur
+                || grille[y][x] != CASE_LIBRE) {
+            return;
         }
 
-        return grille[y][x] == PORTE;
+        porte = new Porte(x, y);
     }
+
+    
     // Vérifier si le déplacement est possible
     public boolean deplacementPossible(int x, int y) {
         if (x < 0 || x >= largeur || y < 0 || y >= hauteur) {
@@ -116,4 +112,52 @@ public class Chambre {
         return grille[y][x] == OBSTACLE;
     }
     
+    // Rendre la porte accessible après la mission
+    public void rendrePorteAccessible() {
+
+        if (porte == null) {
+            return;
+        }
+
+        porte.rendreAccessible();
+
+        grille[porte.getY()][porte.getX()] = PORTE;
+    }
+
+    // Ouvrir la porte après l'obtention de la clé
+    public boolean ouvrirPorte(boolean possedeCle) {
+
+        if (porte == null) {
+            return false;
+        }
+
+        return porte.ouvrir(possedeCle);
+    }
+
+    // Vérifier si la porte est accessible
+    public boolean estPorteAccessible() {
+
+        return porte != null && porte.estAccessible();
+    }
+
+    // Vérifier si la porte est ouverte
+    public boolean estPorteOuverte() {
+
+        return porte != null && porte.estOuverte();
+    }
+
+    // Vérifier si une position correspond à la porte
+    public boolean estPorte(int x, int y) {
+
+        if (porte == null || !porte.estAccessible()) {
+            return false;
+        }
+
+        return porte.getX() == x && porte.getY() == y;
+    }
+
+    // Récupérer l'objet Porte
+    public Porte getPorte() {
+        return porte;
+    }
 }
