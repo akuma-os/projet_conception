@@ -115,5 +115,14 @@ public class Chambre {
 
         return grille[y][x] == OBSTACLE;
     }
+
+    public Theme getTheme() {
+    switch (id) {
+        case 1:  return Theme.FORET;
+        case 2:  return Theme.ZOMBIES;
+        case 3:  return Theme.VOLCAN;
+        default: return Theme.NEIGE;
+    }
+}
     
 }

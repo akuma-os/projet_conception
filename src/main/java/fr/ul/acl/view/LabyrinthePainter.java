@@ -1,6 +1,8 @@
 
 package fr.ul.acl.view;
 
+import java.util.EnumMap;
+import java.util.Map;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -14,7 +16,7 @@ import engine.GamePainter;
 import fr.ul.acl.model.Heros;
 import fr.ul.acl.model.Labyrinthe;
 import fr.ul.acl.model.LabyrintheGame;
-
+import fr.ul.acl.model.Theme;
 public class LabyrinthePainter implements GamePainter {
 
     // =====================================================
@@ -26,11 +28,24 @@ public class LabyrinthePainter implements GamePainter {
 
     private final int TAILLE_HEROS = (int) (TAILLE_CASE * 3);
 
-    private static final Color COULEUR_FOND =
-            new Color(121, 168, 75);
+    private static final Map<Theme, Color> FONDS = new EnumMap<>(Theme.class);
+       
+    private static final Map<Theme, Color> MURS  = new EnumMap<>(Theme.class);
 
-    private static final Color COULEUR_MUR =
-            new Color(121, 83, 51);
+        
+    static {
+        FONDS.put(Theme.FORET,   new Color(121, 168, 75));
+        MURS.put(Theme.FORET,    new Color(121, 83, 51));
+
+        FONDS.put(Theme.ZOMBIES, new Color(70, 80, 60));
+        MURS.put(Theme.ZOMBIES,  new Color(40, 40, 40));
+
+        FONDS.put(Theme.VOLCAN,  new Color(60, 30, 25));
+        MURS.put(Theme.VOLCAN,   new Color(110, 35, 20));
+
+        FONDS.put(Theme.NEIGE,   new Color(225, 235, 245));
+        MURS.put(Theme.NEIGE,    new Color(150, 170, 190));
+        }
 
     // Couleurs de la porte
     private static final Color COULEUR_CONTOUR_PORTE =
@@ -398,6 +413,7 @@ public class LabyrinthePainter implements GamePainter {
 
         Labyrinthe labyrinthe = game.getLabyrinthe();
         Heros heros = game.getHeros();
+        Theme theme = labyrinthe.getTheme();
 
         int largeurEcran = im.getWidth();
         int hauteurEcran = im.getHeight();
@@ -422,7 +438,7 @@ public class LabyrinthePainter implements GamePainter {
                 (hauteurEcran - hauteurLabyrinthe) / 2;
 
         // Fond
-        crayon.setColor(COULEUR_FOND);
+        crayon.setColor(FONDS.get(theme));
 
         crayon.fillRect(
                 0,
@@ -434,7 +450,7 @@ public class LabyrinthePainter implements GamePainter {
         crayon.translate(offsetX, offsetY);
 
         // Dessiner les murs
-        crayon.setColor(COULEUR_MUR);
+        crayon.setColor(MURS.get(theme));
 
         for (int y = 0; y < labyrinthe.getHauteur(); y++) {
 
