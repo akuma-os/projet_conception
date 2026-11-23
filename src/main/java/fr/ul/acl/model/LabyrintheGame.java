@@ -5,40 +5,55 @@ import engine.Cmd;
 import engine.Game;
 
 public class LabyrintheGame implements Game {
-
+    private GestionnaireProgression gestionnaireProgression;
     private Heros heros;
     private Labyrinthe labyrinthe;
 
     public LabyrintheGame() {
         this.labyrinthe = new Labyrinthe();
         this.heros = new Heros(1, 1);
+        BanqueQuestions banqueQuestions = new BanqueQuestions();
+        this.gestionnaireProgression =
+            new GestionnaireProgression(banqueQuestions);
     }
 
-    // Vérifier si le héros a atteint une porte
     private void verifierTransition() {
 
         int x = heros.getX();
         int y = heros.getY();
 
-        Chambre chambreActuelle = labyrinthe.getChambreCourante();
+        Chambre chambreActuelle = labyrinthe.getChambreActuelle();
 
-        // Vérifier si le héros se trouve sur une porte
+        // Le héros est arrivé sur la porte
         if (chambreActuelle.estPorte(x, y)) {
 
-            int niveauActuel = chambreActuelle.getId();
+            // On tente d'ouvrir la porte avec la clé obtenue
+            boolean porteOuverte =
+                    chambreActuelle.ouvrirPorte(
+                            gestionnaireProgression.aCle()
+                    );
 
-            // Passer au niveau suivant
-            if (niveauActuel < 3) {
+            // On vérifie que la porte est ouverte
+            // et que la progression autorise le passage
+            if (porteOuverte
+                    && gestionnaireProgression.autoriserTransition()) {
 
-                int niveauSuivant = niveauActuel + 1;
+                int idChambreActuelle = chambreActuelle.getId();
 
-                labyrinthe.changerChambre(niveauSuivant);
+                // Il n'y a pas de chambre après la chambre 3
+                if (idChambreActuelle < 3) {
 
-                // Placer le héros à l'entrée de la nouvelle chambre
-                heros = new Heros(1, 1);
+                    int nouvelId = idChambreActuelle + 1;
 
-                System.out.println("Bienvenue dans la chambre "
-                        + niveauSuivant);
+                    // Changement de chambre
+                    labyrinthe.changerChambre(nouvelId);
+
+                    // Mise à jour de la progression
+                    gestionnaireProgression.passerChambreSuivante();
+
+                    // Repositionnement du héros
+                    heros.setPosition(1, 1);
+                }
             }
         }
     }

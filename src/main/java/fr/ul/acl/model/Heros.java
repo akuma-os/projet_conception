@@ -21,6 +21,10 @@ public class Heros {
     public int getY() {
         return y;
     }
+    public void setPosition(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
 
     // Déplacer le héros si la case d'arrivée est accessible
     public void deplacer(int dx, int dy, Labyrinthe labyrinthe) {
