@@ -18,6 +18,7 @@ public class Chambre {
     private final List<Decor> decors = new ArrayList<>();
     private final List<Ressource> ressources = new ArrayList<>();
     private Porte porte;
+    private ZoneQuestionnaire zoneQuestionnaire;
     public Chambre(int id, String nom, int[][] grille) {
         this.id = id;
         this.nom = nom;
@@ -169,4 +170,33 @@ public class Chambre {
     public Porte getPorte() {
         return porte;
     }
+
+    public void ajouterZoneQuestionnaire(int x, int y) {
+        if (x < 0 || x >= largeur || y < 0 || y >= hauteur) {
+            throw new IllegalArgumentException("La position de la zone est hors de la chambre.");
+        }
+
+        if (grille[y][x] != CASE_LIBRE) {
+            throw new IllegalArgumentException("La case choisie pour la zone n'est pas libre.");
+        }
+
+        zoneQuestionnaire = new ZoneQuestionnaire(x, y);
+    }
+
+    public void rendreZoneQuestionnaireAccessible() {
+        if (zoneQuestionnaire != null) {
+            zoneQuestionnaire.rendreAccessible();
+        }
+    }
+
+    public boolean estDansZoneQuestionnaire(int x, int y) {
+        return zoneQuestionnaire != null
+                && zoneQuestionnaire.contientHeros(x, y);
+    }
+
+    public ZoneQuestionnaire getZoneQuestionnaire() {
+        return zoneQuestionnaire;
+    }
+
 }
+

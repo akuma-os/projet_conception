@@ -158,7 +158,7 @@ public class GestionnaireProgression {
 
     public void attribuerCle() {
 
-        if (missionTerminee && questionnaireReussi) {
+        if (questionnaireReussi) {
             cleObtenue = true;
         }
     }
@@ -246,5 +246,12 @@ public class GestionnaireProgression {
 
     public Questionnaire getQuestionnaireActuel() {
         return questionnaireActuel;
+    }
+    public Question getQuestionActuelle() {
+        if (questionnaireActuel == null) {
+            return null;
+        }
+
+        return questionnaireActuel.getQuestionActuelle();
     }
 }
