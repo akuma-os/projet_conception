@@ -21,6 +21,10 @@ public class Heros {
     public int getY() {
         return y;
     }
+    public void setPosition(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
 
     public void deplacer(int dx, int dy, Labyrinthe labyrinthe) {
 
