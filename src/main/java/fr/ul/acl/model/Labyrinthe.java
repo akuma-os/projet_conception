@@ -6,7 +6,7 @@ import java.util.List;
 public class Labyrinthe {
 
     private final List<Chambre> chambres;
-    private Chambre chambreCourante;
+    private Chambre chambreActuelle;
 
     public Labyrinthe() {
         this(0);
@@ -14,12 +14,12 @@ public class Labyrinthe {
 
     public Labyrinthe(int idChambreInitiale) {
         this.chambres = ConstructeurChambres.creerChambresParDefaut();
-        this.chambreCourante = this.chambres.get(0);
+        this.chambreActuelle = this.chambres.get(0);
         changerChambre(idChambreInitiale);
     }
 
-    public Chambre getChambreCourante() {
-        return chambreCourante;
+    public Chambre getChambreActuelle() {
+        return chambreActuelle;
     }
 
     public List<Chambre> getChambres() {
@@ -39,44 +39,49 @@ public class Labyrinthe {
         Chambre chambre = getChambre(id);
 
         if (chambre != null) {
-            chambreCourante = chambre;
+            chambreActuelle = chambre;
         }
     }
 
     public int getHauteur() {
-        return chambreCourante.getHauteur();
+        return chambreActuelle.getHauteur();
     }
 
     public int getLargeur() {
-        return chambreCourante.getLargeur();
+        return chambreActuelle.getLargeur();
     }
 
     public int[][] getGrille() {
-        return chambreCourante.getGrille();
+        return chambreActuelle.getGrille();
     }
 
     public boolean deplacementPossible(int x, int y) {
-        return chambreCourante.deplacementPossible(x, y);
+        return chambreActuelle.deplacementPossible(x, y);
     }
 
     public boolean estMur(int x, int y) {
-        return chambreCourante.estMur(x, y);
+        return chambreActuelle.estMur(x, y);
     }
 
     // Vérifie si une case correspond à une porte
     public boolean estPorte(int x, int y) {
-        return chambreCourante.estPorte(x, y);
+        return chambreActuelle.estPorte(x, y);
     }
 
     public boolean estObstacle(int x, int y) {
-        return chambreCourante.estObstacle(x, y);
+        return chambreActuelle.estObstacle(x, y);
     }
 
     public List<Decor> getDecors() {
-        return chambreCourante.getDecors();
+        return chambreActuelle.getDecors();
     }
 
     public List<Ressource> getRessources() {
-        return chambreCourante.getRessources();
+        return chambreActuelle.getRessources();
+    }
+
+    public Theme getTheme() {
+        return chambreActuelle.getTheme();
     }
 }
+
