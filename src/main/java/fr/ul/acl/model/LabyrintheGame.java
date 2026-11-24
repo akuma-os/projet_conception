@@ -8,6 +8,9 @@ public class LabyrintheGame implements Game {
     private GestionnaireProgression gestionnaireProgression;
     private Heros heros;
     private Labyrinthe labyrinthe;
+    private int compteurTours = 0;
+    private final GestionnaireCombat gestionnaireCombat = new GestionnaireCombat();
+
     private boolean questionnaireDeclenche;
     private boolean questionnaireEnAttente;
     public LabyrintheGame() {
@@ -138,6 +141,10 @@ public class LabyrintheGame implements Game {
                 heros.deplacer(1, 0, labyrinthe);
                 break;
 
+            case ATTACK:
+                attaquerMonstre();
+                break;
+
             case IDLE:
             default:
                 break;
@@ -147,6 +154,8 @@ public class LabyrintheGame implements Game {
 
         // Vérifier ensuite la porte
         verifierTransition();
+
+        deplacerMonstres();
     }
 
     @Override
@@ -162,6 +171,31 @@ public class LabyrintheGame implements Game {
         return labyrinthe;
     }
 
+    private void deplacerMonstres() {
+        compteurTours++;
+
+        if (compteurTours >= 5) {
+
+            for (Monstre monstre : labyrinthe.getMonstres()) {
+                monstre.agir(heros, labyrinthe);
+            }
+
+            compteurTours = 0;
+        }
+    }
+
+    private void attaquerMonstre() {
+
+        for (Monstre monstre : labyrinthe.getMonstres()) {
+
+            if (!monstre.estElimine()
+                    && gestionnaireCombat.estAPortee(heros, monstre)) {
+
+                gestionnaireCombat.attaquer(heros, monstre);
+
+                return;
+            }
+        }
     // Indique au contrôleur qu'un questionnaire doit être affiché
     public boolean estQuestionnaireEnAttente() {
         return questionnaireEnAttente;

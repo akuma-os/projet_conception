@@ -13,6 +13,8 @@ import fr.ul.acl.model.Chambre;
 import fr.ul.acl.model.Heros;
 import fr.ul.acl.model.Labyrinthe;
 import fr.ul.acl.model.LabyrintheGame;
+import fr.ul.acl.model.Monstre;
+
 import fr.ul.acl.model.Theme;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -690,6 +692,14 @@ public class LabyrinthePainter implements GamePainter {
 
 
 
+        dessinerMonstres(crayon, labyrinthe, tailleCase);
+        
+        // Dessiner le héros
+        dessinerHeros(crayon, heros, tailleCase);
+
+        crayon.dispose();
+    }
+
     // =====================================================
     // 16. DIMENSIONS DE LA FENETRE
     // =====================================================
@@ -703,6 +713,30 @@ public class LabyrinthePainter implements GamePainter {
     public int getHeight() {
         return TAILLE_FENETRE;
     }
+
+
+    private void dessinerMonstres(Graphics2D crayon,
+                                      Labyrinthe labyrinthe,
+                                      int tailleCase) {
+
+        for (Monstre monstre : labyrinthe.getMonstres()) {
+
+                if (!monstre.estElimine()) {
+
+                crayon.setColor(Color.RED);
+
+                crayon.fillOval(
+                        monstre.getX() * tailleCase,
+                        monstre.getY() * tailleCase,
+                        tailleCase,
+                        tailleCase
+                );
+            }
+        }
+    }
+
+
+
 }
 
 

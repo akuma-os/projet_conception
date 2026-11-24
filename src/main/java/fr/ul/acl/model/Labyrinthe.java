@@ -83,5 +83,13 @@ public class Labyrinthe {
     public Theme getTheme() {
         return chambreActuelle.getTheme();
     }
+
+    public List<Monstre> getMonstres() {
+        return chambreCourante.getMonstres();
+    }
+
+    public boolean estOccupeeParMonstre(int x, int y) {
+        return chambreCourante.estOccupeeParMonstre(x, y);
+    }
 }
 

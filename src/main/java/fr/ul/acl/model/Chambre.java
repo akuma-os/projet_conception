@@ -17,6 +17,8 @@ public class Chambre {
     private final int largeur;
     private final List<Decor> decors = new ArrayList<>();
     private final List<Ressource> ressources = new ArrayList<>();
+    private final List<Monstre> monstres = new ArrayList<>();
+
     private Porte porte;
     private ZoneQuestionnaire zoneQuestionnaire;
     public Chambre(int id, String nom, int[][] grille) {
@@ -55,6 +57,10 @@ public class Chambre {
         return ressources;
     }
 
+    public List<Monstre> getMonstres() {
+        return monstres;
+    }
+
     // Ajouter un décor sur une case libre
     public void ajouterDecor(Decor decor) {
         decors.add(decor);
@@ -72,6 +78,12 @@ public class Chambre {
     public void ajouterRessource(Ressource ressource) {
         ressources.add(ressource);
     }
+
+    public void ajouterMonstre(Monstre monstre) {
+        monstres.add(monstre);
+    }
+
+    // Ajouter une porte sur une case libre
     // Créer une porte, initialement inaccessible
     public void ajouterPorte(int x, int y) {
 
@@ -113,6 +125,16 @@ public class Chambre {
         return grille[y][x] == OBSTACLE;
     }
 
+    public boolean estOccupeeParMonstre(int x, int y) {
+        for (Monstre monstre : monstres) {
+            if (!monstre.estElimine()
+                    && monstre.getX() == x
+                    && monstre.getY() == y) {
+                return true;
+            }
+        } 
+
+        return false;
   public Theme getTheme() {
     switch (id) {
         case 0:  return Theme.FORET;

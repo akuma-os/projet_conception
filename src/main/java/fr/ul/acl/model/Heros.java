@@ -26,12 +26,14 @@ public class Heros {
         this.y = y;
     }
 
-    // Déplacer le héros si la case d'arrivée est accessible
     public void deplacer(int dx, int dy, Labyrinthe labyrinthe) {
+
         int nouvelX = x + dx;
         int nouvelY = y + dy;
 
-        if (labyrinthe.deplacementPossible(nouvelX, nouvelY)) {
+        if (labyrinthe.deplacementPossible(nouvelX, nouvelY)
+                && !labyrinthe.estOccupeeParMonstre(nouvelX, nouvelY)) {
+
             x = nouvelX;
             y = nouvelY;
         }
