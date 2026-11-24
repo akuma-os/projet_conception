@@ -79,4 +79,8 @@ public class Labyrinthe {
     public List<Ressource> getRessources() {
         return chambreCourante.getRessources();
     }
+
+    public List<Monstre> getMonstres() {
+        return chambreCourante.getMonstres();
+    }
 }

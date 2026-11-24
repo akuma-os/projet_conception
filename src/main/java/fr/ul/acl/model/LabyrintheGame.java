@@ -8,6 +8,8 @@ public class LabyrintheGame implements Game {
 
     private Heros heros;
     private Labyrinthe labyrinthe;
+    private int compteurTours = 0;
+    private final GestionnaireCombat gestionnaireCombat = new GestionnaireCombat();
 
     public LabyrintheGame() {
         this.labyrinthe = new Labyrinthe();
@@ -64,6 +66,10 @@ public class LabyrintheGame implements Game {
                 heros.deplacer(1, 0, labyrinthe);
                 break;
 
+            case ATTACK:
+                attaquerMonstre();
+                break
+
             case IDLE:
             default:
                 break;
@@ -71,6 +77,8 @@ public class LabyrintheGame implements Game {
 
         // Vérifier la porte après le déplacement
         verifierTransition();
+
+        deplacerMonstres();
     }
 
     @Override
@@ -84,5 +92,32 @@ public class LabyrintheGame implements Game {
 
     public Labyrinthe getLabyrinthe() {
         return labyrinthe;
+    }
+
+    private void deplacerMonstres() {
+        compteurTours++;
+
+        if (compteurTours >= 5) {
+
+            for (Monstre monstre : labyrinthe.getMonstres()) {
+                monstre.agir(heros, labyrinthe);
+            }
+
+            compteurTours = 0;
+        }
+    }
+
+    private void attaquerMonstre() {
+
+        for (Monstre monstre : labyrinthe.getMonstres()) {
+
+            if (!monstre.estElimine()
+                    && gestionnaireCombat.estAPortee(heros, monstre)) {
+
+                gestionnaireCombat.attaquer(heros, monstre);
+
+                return;
+            }
+        }
     }
 }

@@ -14,6 +14,8 @@ public class LabyrintheController implements GameController {
     // Mémorise les touches actuellement maintenues
     private final List<Integer> touchesAppuyees = new ArrayList<>();
 
+    private boolean attaqueDemandee = false;
+
     private final LabyrintheGame game;
 
     public LabyrintheController() {
@@ -32,6 +34,10 @@ public class LabyrintheController implements GameController {
         // Évite les doublons dus à la répétition automatique du clavier
         if (!touchesAppuyees.contains(touche)) {
             touchesAppuyees.add(touche);
+
+            if (touche == KeyEvent.VK_SPACE){
+                attaqueDemandee = true;
+            }
         }
     }
 
@@ -44,6 +50,11 @@ public class LabyrintheController implements GameController {
 
     @Override
     public synchronized Cmd getCommand() {
+
+        if (attaqueDemandee) {
+            attaqueDemandee = false;
+            return Cmd.ATTACK;
+        }
 
         // On parcourt les touches de la plus récente à la plus ancienne
         for (int i = touchesAppuyees.size() - 1; i >= 0; i--) {
@@ -76,6 +87,5 @@ public class LabyrintheController implements GameController {
 
     @Override
     public void keyTyped(KeyEvent event) {
-        // Aucune action spécifique n'est nécessaire ici.
     }
 }

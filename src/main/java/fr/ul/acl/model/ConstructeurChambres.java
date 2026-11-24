@@ -2,6 +2,7 @@ package fr.ul.acl.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class ConstructeurChambres {
     private static final TypeDecor[][] THEMES = {
@@ -62,6 +63,8 @@ public class ConstructeurChambres {
         if (id < 3) {
             chambre.ajouterPorte(grille[0].length - 2, 1);
         }
+
+        ajouterMonstres(chambre);
 
         return chambre;
     }
@@ -138,5 +141,70 @@ public class ConstructeurChambres {
             }
         }
         return grille;
+    }
+
+
+    private static void ajouterMonstres(Chambre chambre) {
+
+        if (chambre.getId() == 1) {
+            for (int i = 0; i < 10; i++) {
+                placerMonstre(chambre, "zombie");
+            }
+        }
+
+        if (chambre.getId() == 3) {
+            for (int i = 0; i < 5; i++) {
+                placerMonstre(chambre, "facile");
+            }
+
+            for (int i = 0; i < 3; i++) {
+                placerMonstre(chambre, "intermediaire");
+            }
+
+            for (int i = 0; i < 2; i++) {
+                placerMonstre(chambre, "difficile");
+            }
+
+            placerMonstre(chambre, "chevalier");
+        }
+    }
+
+    private static void placerMonstre(Chambre chambre, String type) {
+
+        Random random = new Random();
+        int x;
+        int y;
+
+        do {
+            x = 1 + random.nextInt(chambre.getLargeur() - 2);
+            y = 1 + random.nextInt(chambre.getHauteur() - 2);
+
+        } while (chambre.getGrille()[y][x] != Chambre.CASE_LIBRE
+                || (x == 1 && y == 1)
+                || chambre.estOccupeeParMonstre(x, y));
+
+        Zone zone = new Zone(x - 4, y - 4, 9, 9);
+
+        switch (type) {
+            case "zombie":
+                chambre.ajouterMonstre(new Zombie(x, y, zone));
+                break;
+
+            case "facile":
+                chambre.ajouterMonstre(new MonstreFacile(x, y, zone));
+                break;
+
+            case "intermediaire":
+                chambre.ajouterMonstre(new MonstreIntermediaire(x, y, zone));
+                break;
+
+            case "difficile":
+                chambre.ajouterMonstre(new MonstreDifficile(x, y, zone));
+                break;
+
+            case "chevalier":
+                chambre.ajouterMonstre(new Chevalier(x, y, zone));
+                break;
+        }
     }
 }

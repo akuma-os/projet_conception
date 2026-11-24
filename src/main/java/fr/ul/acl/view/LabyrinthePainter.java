@@ -14,6 +14,7 @@ import engine.GamePainter;
 import fr.ul.acl.model.Heros;
 import fr.ul.acl.model.Labyrinthe;
 import fr.ul.acl.model.LabyrintheGame;
+import fr.ul.acl.model.Monstre;
 
 public class LabyrinthePainter implements GamePainter {
 
@@ -482,6 +483,9 @@ public class LabyrinthePainter implements GamePainter {
                 tailleCase
         );
 
+
+        dessinerMonstres(crayon, labyrinthe, tailleCase);
+        
         // Dessiner le héros
         dessinerHeros(crayon, heros, tailleCase);
 
@@ -501,4 +505,28 @@ public class LabyrinthePainter implements GamePainter {
     public int getHeight() {
         return TAILLE_FENETRE;
     }
+
+
+    private void dessinerMonstres(Graphics2D crayon,
+                                      Labyrinthe labyrinthe,
+                                      int tailleCase) {
+
+        for (Monstre monstre : labyrinthe.getMonstres()) {
+
+                if (!monstre.estElimine()) {
+
+                crayon.setColor(Color.RED);
+
+                crayon.fillOval(
+                        monstre.getX() * tailleCase,
+                        monstre.getY() * tailleCase,
+                        tailleCase,
+                        tailleCase
+                );
+            }
+        }
+    }
+
+
+
 }
