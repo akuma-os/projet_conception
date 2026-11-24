@@ -29,11 +29,10 @@ public class BanqueQuestions {
             questionsRestantes.put(categorie, new ArrayList<Question>());
         }
 
-        // Remplissage des banques
+       // Remplissage des banques
         ajouterQuestionsMathematiques();
         ajouterQuestionsCultureGenerale();
-
-        // ACL sera complété à partir du cours
+        ajouterQuestionsACL();
     }
 
     // =====================================================
@@ -404,6 +403,169 @@ public class BanqueQuestions {
                 "Vrai"
         ));
     }
+
+
+        private void ajouterQuestionsACL() {
+
+                Question.Categorie categorie = Question.Categorie.ACL;
+
+                // ---------- QCM ----------
+
+                ajouterQuestion(new Question(
+                        "Quel est le rôle principal de Git ?",
+                        Question.TypeQuestion.QCM,
+                        categorie,
+                        liste("Créer des interfaces graphiques",
+                                "Gérer les versions du code source",
+                                "Compiler un programme Java",
+                                "Exécuter un programme"),
+                        "Gérer les versions du code source"
+                ));
+
+                ajouterQuestion(new Question(
+                        "Quelle commande permet d'initialiser un dépôt Git ?",
+                        Question.TypeQuestion.QCM,
+                        categorie,
+                        liste("git start", "git init", "git create", "git begin"),
+                        "git init"
+                ));
+
+                ajouterQuestion(new Question(
+                        "Quelle commande permet d'ajouter des modifications à la zone de préparation ?",
+                        Question.TypeQuestion.QCM,
+                        categorie,
+                        liste("git push", "git commit", "git add", "git merge"),
+                        "git add"
+                ));
+
+                ajouterQuestion(new Question(
+                        "Quelle commande permet d'enregistrer un commit ?",
+                        Question.TypeQuestion.QCM,
+                        categorie,
+                        liste("git save", "git commit", "git upload", "git record"),
+                        "git commit"
+                ));
+
+                ajouterQuestion(new Question(
+                        "Quelle commande permet de créer une nouvelle branche ?",
+                        Question.TypeQuestion.QCM,
+                        categorie,
+                        liste("git branch", "git commit", "git status", "git pull"),
+                        "git branch"
+                ));
+
+                ajouterQuestion(new Question(
+                        "En programmation orientée objet, qu'est-ce qu'une classe ?",
+                        Question.TypeQuestion.QCM,
+                        categorie,
+                        liste("Une instance d'un objet",
+                                "Un modèle permettant de créer des objets",
+                                "Une variable globale",
+                                "Une méthode principale"),
+                        "Un modèle permettant de créer des objets"
+                ));
+
+                ajouterQuestion(new Question(
+                        "Comment appelle-t-on une instance d'une classe ?",
+                        Question.TypeQuestion.QCM,
+                        categorie,
+                        liste("Une méthode", "Un objet", "Un attribut", "Un package"),
+                        "Un objet"
+                ));
+
+                ajouterQuestion(new Question(
+                        "Quel principe de la POO consiste à protéger les données d'un objet ?",
+                        Question.TypeQuestion.QCM,
+                        categorie,
+                        liste("L'héritage",
+                                "Le polymorphisme",
+                                "L'encapsulation",
+                                "La compilation"),
+                        "L'encapsulation"
+                ));
+
+                ajouterQuestion(new Question(
+                        "Quel mot-clé Java permet d'hériter d'une classe ?",
+                        Question.TypeQuestion.QCM,
+                        categorie,
+                        liste("implements", "extends", "inherits", "super"),
+                        "extends"
+                ));
+
+                ajouterQuestion(new Question(
+                        "Quel est le rôle principal d'un constructeur en Java ?",
+                        Question.TypeQuestion.QCM,
+                        categorie,
+                        liste("Détruire un objet",
+                                "Initialiser un objet lors de sa création",
+                                "Compiler une classe",
+                                "Créer une branche Git"),
+                        "Initialiser un objet lors de sa création"
+                ));
+
+                // ---------- VRAI / FAUX ----------
+
+                ajouterQuestion(vraiFaux(
+                        "Git permet de suivre les modifications d'un projet.",
+                        categorie,
+                        "Vrai"
+                ));
+
+                ajouterQuestion(vraiFaux(
+                        "La commande git push permet d'envoyer les commits vers un dépôt distant.",
+                        categorie,
+                        "Vrai"
+                ));
+
+                ajouterQuestion(vraiFaux(
+                        "La commande git pull permet de récupérer les modifications d'un dépôt distant.",
+                        categorie,
+                        "Vrai"
+                ));
+
+                ajouterQuestion(vraiFaux(
+                        "Un commit permet d'enregistrer un état du projet dans l'historique Git.",
+                        categorie,
+                        "Vrai"
+                ));
+
+                ajouterQuestion(vraiFaux(
+                        "La commande git merge permet de fusionner des branches.",
+                        categorie,
+                        "Vrai"
+                ));
+
+                ajouterQuestion(vraiFaux(
+                        "En Java, un objet est une instance d'une classe.",
+                        categorie,
+                        "Vrai"
+                ));
+
+                ajouterQuestion(vraiFaux(
+                        "L'héritage permet à une classe de récupérer des caractéristiques d'une autre classe.",
+                        categorie,
+                        "Vrai"
+                ));
+
+                ajouterQuestion(vraiFaux(
+                        "L'encapsulation consiste à rendre tous les attributs obligatoirement publics.",
+                        categorie,
+                        "Faux"
+                ));
+
+                ajouterQuestion(vraiFaux(
+                        "Le polymorphisme permet d'utiliser une même interface avec différentes implémentations.",
+                        categorie,
+                        "Vrai"
+                ));
+
+                ajouterQuestion(vraiFaux(
+                        "En Java, une classe peut avoir plusieurs constructeurs avec des paramètres différents.",
+                        categorie,
+                        "Vrai"
+                ));
+        }
+
 
     // =====================================================
     // OUTILS DE CREATION

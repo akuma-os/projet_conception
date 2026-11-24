@@ -1,6 +1,4 @@
-
 package fr.ul.acl.view;
-
 import java.util.EnumMap;
 import java.util.Map;
 import java.awt.Color;
@@ -9,14 +7,14 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-
 import javax.imageio.ImageIO;
-
 import engine.GamePainter;
 import fr.ul.acl.model.Heros;
 import fr.ul.acl.model.Labyrinthe;
 import fr.ul.acl.model.LabyrintheGame;
 import fr.ul.acl.model.Theme;
+import java.awt.Font;
+import java.awt.FontMetrics;
 public class LabyrinthePainter implements GamePainter {
 
     // =====================================================
@@ -62,6 +60,15 @@ public class LabyrinthePainter implements GamePainter {
 
     private final LabyrintheGame game;
 
+        // Couleurs de la zone de questionnaire
+    private static final Color COULEUR_ZONE_QUESTIONNAIRE =
+                new Color(220, 45, 45);
+
+    private static final Color CONTOUR_ZONE_QUESTIONNAIRE =
+                new Color(120, 0, 0);
+
+    private static final Color COULEUR_SYMBOLE_QUESTIONNAIRE =
+                Color.WHITE;
     // =====================================================
     // 2. CONFIGURATION DES SPRITESHEETS
     // =====================================================
@@ -397,6 +404,55 @@ public class LabyrinthePainter implements GamePainter {
         );
     }
 
+
+        private void dessinerZoneQuestionnaire(
+                Graphics2D crayon,
+                int x,
+                int y,
+                int tailleCase) {
+
+        int marge = 3;
+
+        int caseX = x * tailleCase;
+        int caseY = y * tailleCase;
+
+        // Fond rouge
+        crayon.setColor(COULEUR_ZONE_QUESTIONNAIRE);
+        crayon.fillRect(
+                caseX + marge,
+                caseY + marge,
+                tailleCase - 2 * marge,
+                tailleCase - 2 * marge
+        );
+
+        // Contour rouge foncé
+        crayon.setColor(CONTOUR_ZONE_QUESTIONNAIRE);
+        crayon.drawRect(
+                caseX + marge,
+                caseY + marge,
+                tailleCase - 2 * marge,
+                tailleCase - 2 * marge
+        );
+
+        // Symbole "?"
+        Font anciennePolice = crayon.getFont();
+
+        crayon.setFont(new Font("Arial", Font.BOLD, tailleCase * 2 / 3));
+        crayon.setColor(COULEUR_SYMBOLE_QUESTIONNAIRE);
+
+        FontMetrics mesures = crayon.getFontMetrics();
+
+        String symbole = "?";
+
+        int texteX = caseX + (tailleCase - mesures.stringWidth(symbole)) / 2;
+        int texteY = caseY + (tailleCase - mesures.getHeight()) / 2
+                + mesures.getAscent();
+
+        crayon.drawString(symbole, texteX, texteY);
+
+        crayon.setFont(anciennePolice);
+        }
+
     // =====================================================
     // 11. DESSIN DU LABYRINTHE
     // =====================================================
@@ -485,6 +541,22 @@ public class LabyrinthePainter implements GamePainter {
             }
         }
 
+        // Dessiner la zone de questionnaire
+        if (labyrinthe.getChambreActuelle().getZoneQuestionnaire() != null) {
+
+        int zoneX = labyrinthe.getChambreActuelle()
+                .getZoneQuestionnaire().getX();
+
+        int zoneY = labyrinthe.getChambreActuelle()
+                .getZoneQuestionnaire().getY();
+
+        dessinerZoneQuestionnaire(
+                crayon,
+                zoneX,
+                zoneY,
+                tailleCase
+        );
+        }
         // Dessiner les décors et les ressources
         DecorPainter.dessiner(
                 crayon,
