@@ -580,6 +580,7 @@ public class LabyrinthePainter implements GamePainter {
 
    
     
+   
     @Override
     public void draw(BufferedImage im) {
 
@@ -622,7 +623,7 @@ public class LabyrinthePainter implements GamePainter {
             int offsetY =
                     (hauteurEcran - hauteurLabyrinthe) / 2;
 
-            // 1. Fond adapté à la chambre
+            // 1. Dessiner le fond adapté à la chambre
             dessinerFond(
                     crayon,
                     idChambre,
@@ -630,10 +631,10 @@ public class LabyrinthePainter implements GamePainter {
                     hauteurEcran
             );
 
-            // 2. Centrage du labyrinthe
+            // 2. Centrer le labyrinthe
             crayon.translate(offsetX, offsetY);
 
-            // 3. Sols et murs
+            // 3. Dessiner les sols et les murs
             dessinerTerrain(
                     crayon,
                     labyrinthe,
@@ -641,7 +642,7 @@ public class LabyrinthePainter implements GamePainter {
                     idChambre
             );
 
-            // 4. Porte
+            // 4. Dessiner les portes
             for (int y = 0; y < labyrinthe.getHauteur(); y++) {
                 for (int x = 0; x < labyrinthe.getLargeur(); x++) {
 
@@ -651,7 +652,7 @@ public class LabyrinthePainter implements GamePainter {
                 }
             }
 
-            // 5. Zone de questionnaire
+            // 5. Dessiner la zone de questionnaire
             if (chambreActuelle.getZoneQuestionnaire() != null) {
 
                 int zoneX =
@@ -668,21 +669,28 @@ public class LabyrinthePainter implements GamePainter {
                 );
             }
 
-            // 6. Décors
+            // 6. Dessiner les décors
             DecorPainter.dessiner(
                     crayon,
                     labyrinthe.getDecors(),
                     tailleCase
             );
 
-            // 7. Ressources
+            // 7. Dessiner les ressources
             RessourcePainter.dessiner(
                     crayon,
                     labyrinthe.getRessources(),
                     tailleCase
             );
 
-            // 8. Héros
+            // 8. Dessiner les monstres
+            dessinerMonstres(
+                    crayon,
+                    labyrinthe,
+                    tailleCase
+            );
+
+            // 9. Dessiner le héros au premier plan
             dessinerHeros(crayon, heros, tailleCase);
 
         } finally {
@@ -690,15 +698,6 @@ public class LabyrinthePainter implements GamePainter {
         }
     }
 
-
-
-        dessinerMonstres(crayon, labyrinthe, tailleCase);
-        
-        // Dessiner le héros
-        dessinerHeros(crayon, heros, tailleCase);
-
-        crayon.dispose();
-    }
 
     // =====================================================
     // 16. DIMENSIONS DE LA FENETRE

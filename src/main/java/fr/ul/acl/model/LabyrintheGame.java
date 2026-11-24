@@ -195,7 +195,7 @@ public class LabyrintheGame implements Game {
 
                 return;
             }
-        }
+        }}
     // Indique au contrôleur qu'un questionnaire doit être affiché
     public boolean estQuestionnaireEnAttente() {
         return questionnaireEnAttente;

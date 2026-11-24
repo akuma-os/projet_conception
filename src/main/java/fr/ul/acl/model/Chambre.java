@@ -134,8 +134,8 @@ public class Chambre {
             }
         } 
 
-        return false;
-  public Theme getTheme() {
+        return false ;}
+    public Theme getTheme() {
     switch (id) {
         case 0:  return Theme.FORET;
         case 1:  return Theme.ZOMBIES;

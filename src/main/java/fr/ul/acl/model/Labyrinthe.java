@@ -85,11 +85,11 @@ public class Labyrinthe {
     }
 
     public List<Monstre> getMonstres() {
-        return chambreCourante.getMonstres();
+        return chambreActuelle.getMonstres();
     }
 
     public boolean estOccupeeParMonstre(int x, int y) {
-        return chambreCourante.estOccupeeParMonstre(x, y);
+        return chambreActuelle.estOccupeeParMonstre(x, y);
     }
 }
 
