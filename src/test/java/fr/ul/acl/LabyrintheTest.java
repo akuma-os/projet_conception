@@ -53,10 +53,10 @@ public class LabyrintheTest {
     @Test
     public void testChangementDeChambreEtDelegation() {
         assertEquals(4, labyrinthe.getChambres().size());
-        assertSame(labyrinthe.getChambre(0), labyrinthe.getChambreCourante());
+        assertSame(labyrinthe.getChambre(0), labyrinthe.getChambreActuelle());
 
         labyrinthe.changerChambre(2);
-        Chambre chambre = labyrinthe.getChambreCourante();
+        Chambre chambre = labyrinthe.getChambreActuelle();
         assertNotNull(chambre);
         assertEquals(30, labyrinthe.getHauteur());
         assertEquals(30, labyrinthe.getLargeur());
@@ -65,7 +65,7 @@ public class LabyrintheTest {
         assertSame(chambre.getRessources(), labyrinthe.getRessources());
 
         labyrinthe.changerChambre(99);
-        assertSame(chambre, labyrinthe.getChambreCourante());
+        assertSame(chambre, labyrinthe.getChambreActuelle());
         assertNull(labyrinthe.getChambre(99));
     }
 
@@ -74,6 +74,6 @@ public class LabyrintheTest {
         Labyrinthe labyrintheAvecChambreInconnue = new Labyrinthe(99);
 
         assertSame(labyrintheAvecChambreInconnue.getChambre(0),
-            labyrintheAvecChambreInconnue.getChambreCourante());
+            labyrintheAvecChambreInconnue.getChambreActuelle());
     }
 }
