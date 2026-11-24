@@ -112,14 +112,14 @@ public class Chambre {
         return grille[y][x] == OBSTACLE;
     }
 
-    public Theme getTheme() {
+  public Theme getTheme() {
     switch (id) {
-        case 1:  return Theme.FORET;
-        case 2:  return Theme.ZOMBIES;
-        case 3:  return Theme.VOLCAN;
+        case 0:  return Theme.FORET;
+        case 1:  return Theme.ZOMBIES;
+        case 2:  return Theme.VOLCAN;
         default: return Theme.NEIGE;
+     }
     }
-}
     
     // Rendre la porte accessible après la mission
     public void rendrePorteAccessible() {
