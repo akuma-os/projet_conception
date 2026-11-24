@@ -43,36 +43,43 @@ public abstract class Monstre {
     }
 
     
-    private void deplacer(int dx, int dy, Labyrinthe labyrinthe) {
+    private boolean deplacer(int dx, int dy,
+                         Labyrinthe labyrinthe, Heros heros) {
+
         int nouvelX = positionX + dx;
         int nouvelY = positionY + dy;
 
         if (zoneDeplacement.contient(nouvelX, nouvelY)
-                && labyrinthe.deplacementPossible(nouvelX, nouvelY)) {
+                && labyrinthe.deplacementPossible(nouvelX, nouvelY)
+                && !labyrinthe.estOccupeeParMonstre(nouvelX, nouvelY)
+                && !(nouvelX == heros.getX() && nouvelY == heros.getY())) {
+
             positionX = nouvelX;
             positionY = nouvelY;
+
             zoneDetection.deplacer(dx, dy);
+
             return true;
         }
 
         return false;
     }
 
-    public void seDeplacerAleatoirement(Labyrinthe labyrinthe) {
+    public void seDeplacerAleatoirement(Labyrinthe labyrinthe, Heros heros) {
         int direction = random.nextInt(5);
 
         switch (direction) {
             case 1:
-                deplacer(0, -1, labyrinthe);
+                deplacer(0, -1, labyrinthe, heros);
                 break;
             case 2:
-                deplacer(0, 1, labyrinthe);
+                deplacer(0, 1, labyrinthe, heros);
                 break;
             case 3:
-                deplacer(-1, 0, labyrinthe);
+                deplacer(-1, 0, labyrinthe, heros);
                 break;
             case 4:
-                deplacer(1, 0, labyrinthe);
+                deplacer(1, 0, labyrinthe, heros);
                 break;
             default:
                 break;
@@ -96,12 +103,12 @@ public abstract class Monstre {
         int dx = Integer.compare(heros.getX(), positionX);
         int dy = Integer.compare(heros.getY(), positionY);
 
-        if (dx != 0 && deplacer(dx, 0, labyrinthe)) {
+        if (dx != 0 && deplacer(dx, 0, labyrinthe, heros)) {
             return;
         }
 
         if (dy != 0) {
-            deplacer(0, dy, labyrinthe);
+            deplacer(0, dy, labyrinthe, heros);
         }
     }
 
@@ -110,7 +117,7 @@ public abstract class Monstre {
             if (detecterHeros(heros)) {
                 poursuivreHeros(heros, labyrinthe);
             } else {
-                seDeplacerAleatoirement(labyrinthe);
+                seDeplacerAleatoirement(labyrinthe, heros);
             }
         }
     }

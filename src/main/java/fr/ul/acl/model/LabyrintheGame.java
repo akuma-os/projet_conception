@@ -68,7 +68,7 @@ public class LabyrintheGame implements Game {
 
             case ATTACK:
                 attaquerMonstre();
-                break
+                break;
 
             case IDLE:
             default:
