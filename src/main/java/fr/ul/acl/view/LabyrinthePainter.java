@@ -11,6 +11,7 @@ import java.io.InputStream;
 import javax.imageio.ImageIO;
 
 import engine.GamePainter;
+import fr.ul.acl.model.Chambre;
 import fr.ul.acl.model.Heros;
 import fr.ul.acl.model.Labyrinthe;
 import fr.ul.acl.model.LabyrintheGame;
@@ -23,8 +24,11 @@ public class LabyrinthePainter implements GamePainter {
 
     public static final int TAILLE_CASE = 30;
     public static final int TAILLE_FENETRE = 600;
+    
 
     private final int TAILLE_HEROS = (int) (TAILLE_CASE * 3);
+    private final int TAILLE_VIE = (int) (TAILLE_CASE * 10);
+    private final int TAILLE_CRISTAUX = (int) (TAILLE_CASE*3);
 
     private static final Color COULEUR_FOND =
             new Color(121, 168, 75);
@@ -33,6 +37,7 @@ public class LabyrinthePainter implements GamePainter {
             new Color(121, 83, 51);
 
     // Couleurs de la porte
+   
     private static final Color COULEUR_CONTOUR_PORTE =
             new Color(65, 35, 20);
 
@@ -56,13 +61,24 @@ public class LabyrinthePainter implements GamePainter {
 
     private static final String WALK_PATH =
             "/Swordsman_lvl1_Walk_with_shadow.png";
+    
+    private static final String HEALTH =
+    		"/Swordsman_health.png";
+    private static final String CRISTAL =
+    		"/Swordsman_lvl1_minerals_quantity.png";
 
     private static final int IDLE_FRAME_WIDTH = 64;
     private static final int IDLE_FRAME_HEIGHT = 64;
 
     private static final int WALK_FRAME_WIDTH = 64;
     private static final int WALK_FRAME_HEIGHT = 64;
-
+    
+    private static final int HEALTH_FRAME_WIDTH =62;
+    private static final int HEALTH_FRAME_HEIGHT = 64;
+    
+    private static final int CRISTAL_FRAME_WIDTH =17;
+    private static final int CRISTAL_FRAME_HEIGHT = 64;
+    
     private static final int[] WALK_FRAME_COUNTS = {
             12,
             12,
@@ -80,6 +96,8 @@ public class LabyrinthePainter implements GamePainter {
     private static final int WALK_ROW_LEFT = 1;
     private static final int WALK_ROW_RIGHT = 2;
     private static final int WALK_ROW_UP = 3;
+    
+  
 
     // Position initiale des sprites
     private static final int IDLE_START_X = 0;
@@ -93,6 +111,12 @@ public class LabyrinthePainter implements GamePainter {
 
     private static final int WALK_GAP_X = 0;
     private static final int WALK_GAP_Y = 0;
+    
+    private static final int HEALTH_BAR_X = -900;
+    private static final int HEALTH_BAR_Y = 0;
+    
+    private static final int CRISTAL_BAR_X =600;
+    private static final int CRISTAL_BAR_Y = -100;
 
     // =====================================================
     // 3. CONFIGURATION DE L'ANIMATION
@@ -107,15 +131,20 @@ public class LabyrinthePainter implements GamePainter {
 
     private BufferedImage idleSheet;
     private BufferedImage walkSheet;
+    private BufferedImage healthSheet;
+    private BufferedImage cristalCounterSheet;
 
     private int frameActuelle = 0;
     private int directionActuelle = IDLE_ROW_DOWN;
+  
 
     private int ancienneX = -1;
     private int ancienneY = -1;
 
     private long dernierDeplacement = 0;
     private long dernierChangementFrame = 0;
+    
+    
 
     // =====================================================
     // 5. CONSTRUCTEUR
@@ -127,6 +156,8 @@ public class LabyrinthePainter implements GamePainter {
 
         idleSheet = chargerImage(IDLE_PATH);
         walkSheet = chargerImage(WALK_PATH);
+        healthSheet = chargerImage(HEALTH);
+        cristalCounterSheet = chargerImage(CRISTAL);
     }
 
     // =====================================================
@@ -236,6 +267,7 @@ public class LabyrinthePainter implements GamePainter {
 
         detecterDirection(x, y);
         mettreAJourAnimation();
+        
 
         BufferedImage image;
         int frameWidth;
@@ -316,7 +348,7 @@ public class LabyrinthePainter implements GamePainter {
     // =====================================================
     // 10. DESSIN DE LA PORTE
     // =====================================================
-
+  
     private void dessinerPorte(
             Graphics2D crayon,
             int x,
@@ -388,7 +420,7 @@ public class LabyrinthePainter implements GamePainter {
 
     @Override
     public void draw(BufferedImage im) {
-
+    	
         Graphics2D crayon = (Graphics2D) im.getGraphics();
 
         crayon.setRenderingHint(
@@ -458,13 +490,15 @@ public class LabyrinthePainter implements GamePainter {
             for (int x = 0; x < labyrinthe.getLargeur(); x++) {
 
                 if (labyrinthe.estPorte(x, y)) {
-
+                	//condition d'affichage après récupération de la clé
+                	if(game.GetAffichePorte()) {
                     dessinerPorte(
                             crayon,
                             x,
                             y,
                             tailleCase
                     );
+                	}
                 }
             }
         }
@@ -484,7 +518,11 @@ public class LabyrinthePainter implements GamePainter {
 
         // Dessiner le héros
         dessinerHeros(crayon, heros, tailleCase);
-
+        
+        
+        crayon.translate(offsetX, offsetY);
+        AfficherVie(crayon, heros, tailleCase);
+        AfficherQuantiteCristal(crayon,heros,tailleCase);
         crayon.dispose();
     }
 
@@ -501,4 +539,138 @@ public class LabyrinthePainter implements GamePainter {
     public int getHeight() {
         return TAILLE_FENETRE;
     }
+
+
+    
+    //13 Affichage de la vie 
+    private void AfficherVie(
+    		Graphics2D crayon,
+    		Heros heros,
+    		 int tailleCase)
+    {
+    
+ int health = heros.getHealth();
+    	
+    if(healthSheet == null || health < 1 || health > 4){
+    	return;
+    			}
+       
+    	BufferedImage image;
+        int frameWidth;
+        int frameHeight;
+        
+        
+        
+        
+        image = healthSheet;
+        
+        
+        frameWidth = HEALTH_FRAME_WIDTH;
+        frameHeight = HEALTH_FRAME_HEIGHT;
+       
+        
+        int index = 4 - health;
+        
+        int sourceX = index * frameWidth;
+
+        int sourceY = 0;
+
+        if ( sourceX + frameWidth > image.getWidth()
+                || sourceY + frameHeight > image.getHeight()) {
+
+            return;
+        }
+        
+
+        int destinationX = 11 + HEALTH_BAR_X;
+
+        int destinationY = 11 + HEALTH_BAR_Y;
+        int espacement = TAILLE_CRISTAUX * 6 / 10;
+
+        crayon.drawImage(
+                image,
+                destinationX,
+                destinationY,
+                destinationX+TAILLE_VIE,
+                destinationY+TAILLE_VIE,
+                sourceX,
+                sourceY,
+                sourceX + frameWidth,
+                sourceY + frameHeight,
+                null
+                );
+         
+         
+
+    		
+    }
+    
+    
+    // 14 Afficher la quantité de ressource
+    
+
+    private void AfficherQuantiteCristal(
+    		Graphics2D crayon,
+    		Heros heros,
+    		 int tailleCase)
+    {
+    	
+
+ 
+ 
+    if( cristalCounterSheet == null ){
+    	return;
+    			}
+    int cristal = Math.min(99, Math.max(0, heros.getMineralsQuantity()));
+    int dizaines = cristal / 10;
+    int unites = cristal % 10;
+    
+    int espacement = TAILLE_CRISTAUX / 2;  
+
+        int destinationY = 100 + CRISTAL_BAR_Y;
+        
+        
+        if(cristal >= 10) {
+        dessinerChiffre(crayon,dizaines,100+CRISTAL_BAR_X,destinationY);	
+        dessinerChiffre(crayon,unites,120+CRISTAL_BAR_X+ espacement,destinationY);	
+        }
+        else {
+        dessinerChiffre(crayon,unites,120+CRISTAL_BAR_X,destinationY);
+        }
+    }
+        
+private void dessinerChiffre(Graphics2D crayon, int chiffre,
+                int destinationX, int destinationY) {
+
+int sourceX = chiffre * CRISTAL_FRAME_WIDTH;
+int sourceY = 0;
+
+if (sourceX + CRISTAL_FRAME_WIDTH > cristalCounterSheet.getWidth()
+|| sourceY + CRISTAL_FRAME_HEIGHT > cristalCounterSheet.getHeight()) {
+System.out.println("Chiffre hors limites : " + chiffre);
+return;
 }
+
+        crayon.drawImage(
+                cristalCounterSheet,
+                destinationX,
+                destinationY,
+                destinationX+TAILLE_CRISTAUX,
+                destinationY+TAILLE_CRISTAUX,
+                sourceX,
+                sourceY,
+                sourceX + CRISTAL_FRAME_WIDTH,
+                sourceY + CRISTAL_FRAME_HEIGHT,
+                null
+                );
+         
+         
+
+    		
+    }
+    
+}
+    
+
+
+

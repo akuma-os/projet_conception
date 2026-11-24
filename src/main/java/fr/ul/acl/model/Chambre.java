@@ -2,6 +2,7 @@ package fr.ul.acl.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import fr.ul.acl.model.LabyrintheGame;
 
 public class Chambre {
     // Types de cases dans la grille
@@ -9,7 +10,11 @@ public class Chambre {
     public static final int MUR = 1;
     public static final int OBSTACLE = 2;
     public static final int PORTE = 3;
-
+    public static final int RESSOURCE = 4;
+    public static final int CLE = 5;
+   
+    
+    
     private final int id;
     private final String nom;
     private final int[][] grille;
@@ -17,13 +22,16 @@ public class Chambre {
     private final int largeur;
     private final List<Decor> decors = new ArrayList<>();
     private final List<Ressource> ressources = new ArrayList<>();
-
+    
+    
     public Chambre(int id, String nom, int[][] grille) {
         this.id = id;
         this.nom = nom;
         this.grille = grille;
         this.hauteur = grille.length;
         this.largeur = grille[0].length;
+       
+
     }
 
     public int getId() {
@@ -51,7 +59,7 @@ public class Chambre {
     }
 
     public List<Ressource> getRessources() {
-        return ressources;
+    	return ressources;
     }
 
     // Ajouter un décor sur une case libre
@@ -67,18 +75,90 @@ public class Chambre {
             grille[y][x] = OBSTACLE;
         }
     }
+    
+    
     // Ajouter une ressource
     public void ajouterRessource(Ressource ressource) {
         ressources.add(ressource);
-    }
-    // Ajouter une porte sur une case libre
-    public void ajouterPorte(int x, int y) {
+        
+        int x = ressource.getX();
+        int y = ressource.getY();
+
         if (x >= 0 && x < largeur
                 && y >= 0 && y < hauteur
                 && grille[y][x] == CASE_LIBRE) {
-            grille[y][x] = PORTE;
+        	grille[y][x] = RESSOURCE;
+        	
+       
         }
     }
+    public boolean RetirerRessource (int x, int y) {
+    	
+    	boolean cleObtenus = this.estCle(x,y);
+    	boolean potionObtenus = this.estPotionVie(x,y);
+    	boolean cristalObtenus = this.estCristal(x, y);
+    	
+    	if(cleObtenus) {
+    		 this.getRessources().removeIf(ressource -> 
+             ressource.getX() == x && ressource.getY() == y
+         );
+    		 grille[y][x] = CASE_LIBRE;
+    		 return cleObtenus;
+    		 
+    	}
+    		 
+    		/* if(potionObtenus) {
+    			 return potionObtenus;
+    		 }*/
+    	if(potionObtenus) {
+   		 this.getRessources().removeIf(ressource -> 
+            ressource.getX() == x && ressource.getY() == y
+        );
+   		 grille[y][x] = CASE_LIBRE;
+   		 return potionObtenus;
+   	}
+   	
+    	if(cristalObtenus) {
+   		 this.getRessources().removeIf(ressource -> 
+            ressource.getX() == x && ressource.getY() == y
+        );
+   		 grille[y][x] = CASE_LIBRE;
+   		 return cristalObtenus;	 
+   	}
+    		 
+    	
+    	return false;
+    	
+    }
+    
+    
+ // Ajouter une cle
+    public void ajouterCle(Ressource ressource) {
+        ressources.add(ressource);
+        
+        int x = ressource.getX();
+        int y = ressource.getY();
+
+        if (x >= 0 && x < largeur
+                && y >= 0 && y < hauteur
+                && grille[y][x] == CASE_LIBRE) {
+        	grille[y][x] = CLE;
+        }
+    }
+    
+    
+    
+    // Ajouter une porte sur une case libre
+    public void ajouterPorte(int x, int y) {  
+        		   if (x >= 0 && x < largeur
+        	                && y >= 0 && y < hauteur
+        	                && grille[y][x] == CASE_LIBRE) {
+        	    		
+        	            grille[y][x] = PORTE;
+        	   }
+           
+    	
+        }
 
     // Vérifier si une case est une porte
     public boolean estPorte(int x, int y) {
@@ -88,6 +168,46 @@ public class Chambre {
 
         return grille[y][x] == PORTE;
     }
+    
+ // Vérifier si une case est une Ressource
+    public Ressource estRessource(int x, int y) {
+        for(Ressource r : ressources) {
+        	if(r.getX() == x && r.getY() == y) {
+        		return r;
+        	}
+        }
+
+        return null;
+    }
+    
+    
+    // Vérifier si une case est une cle
+       public boolean estCle(int x, int y) {
+    	   Ressource r = estRessource(x,y);
+    	   
+           return r != null && r.getType() == TypeRessource.CLE;
+       }
+       
+    // Vérifier si une case est une potion de vie
+       public boolean estPotionVie(int x, int y) {
+           Ressource r = estRessource(x,y);
+          
+           return r != null && r.getType() == TypeRessource.POTION;
+           
+       }
+    
+       // Vérifier si une case est un cristal 
+       public boolean estCristal(int x, int y) {
+           Ressource r = estRessource(x,y);
+           
+           return r != null && (r.getType() == TypeRessource.CRISTAL_BLEU 
+        		   || r.getType() == TypeRessource.CRISTAL_ROUGE  
+        		   || r.getType() == TypeRessource.CRISTAL_JAUNE  
+        		   ||r.getType() == TypeRessource.CRISTAL_VIOLET);
+           
+       }
+       
+       
     // Vérifier si le déplacement est possible
     public boolean deplacementPossible(int x, int y) {
         if (x < 0 || x >= largeur || y < 0 || y >= hauteur) {
@@ -95,8 +215,9 @@ public class Chambre {
         }
 
         return grille[y][x] == CASE_LIBRE
-                || grille[y][x] == PORTE;
+                || grille[y][x] == PORTE || grille[y][x] == RESSOURCE || grille[y][x] == CLE;
     }
+    
 
     // Vérifier si une case est un mur
     public boolean estMur(int x, int y) {

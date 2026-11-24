@@ -5,12 +5,15 @@ public class Heros {
 
     private int x;
     private int y;
-
+    private int  health = 3;
+    private int cristalCounter = 10;
+    
     // Constructeur : position initiale du héros
     public Heros(int x, int y) {
         this.x = x;
         this.y = y;
     }
+    
 
     // Récupérer la position horizontale
     public int getX() {
@@ -20,6 +23,16 @@ public class Heros {
     // Récupérer la position verticale
     public int getY() {
         return y;
+    }
+    
+    //Récupérer la vie du heros
+    public int getHealth () {
+    return health;
+    }
+    
+    //récuperer le nombre de cristaux
+    public int getMineralsQuantity() {
+    	return cristalCounter;
     }
 
     // Déplacer le héros si la case d'arrivée est accessible
@@ -31,5 +44,16 @@ public class Heros {
             x = nouvelX;
             y = nouvelY;
         }
+    }
+    
+    
+    
+    
+    public void soigner(int qnt) {
+    	health = Math.min(4, health + qnt);
+    }
+    
+    public void ajouterCristal(int qnt) {
+    	cristalCounter = Math.min(99,  cristalCounter+qnt);
     }
 }
