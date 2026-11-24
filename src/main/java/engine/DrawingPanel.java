@@ -4,6 +4,9 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.function.BiConsumer;
 
 public class DrawingPanel extends JPanel {
 
@@ -70,6 +73,18 @@ public class DrawingPanel extends JPanel {
         g.dispose();
 
         repaint();
+    }
+    
+    
+    public void setOnClick(BiConsumer<Integer, Integer> action) {
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+            	System.out.println("1. clic panneau " + e.getX() + "," + e.getY());
+            	requestFocusInWindow();          // garde le clavier actif
+                action.accept(e.getX(), e.getY());
+            }
+        });
     }
 
     @Override

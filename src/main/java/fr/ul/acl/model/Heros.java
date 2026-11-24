@@ -5,8 +5,9 @@ public class Heros {
 
     private int x;
     private int y;
-    private int  health = 3;
-    private int cristalCounter = 10;
+    private int  health = 4;
+    private int cristalCounter = 0;
+    private final Inventaire inventaire = new Inventaire(8);
     
     // Constructeur : position initiale du héros
     public Heros(int x, int y) {
@@ -34,6 +35,10 @@ public class Heros {
     public int getMineralsQuantity() {
     	return cristalCounter;
     }
+    
+    public Inventaire getInventaire() {
+    	return inventaire;
+    }
 
     // Déplacer le héros si la case d'arrivée est accessible
     public void deplacer(int dx, int dy, Labyrinthe labyrinthe) {
@@ -48,7 +53,6 @@ public class Heros {
     
     
     
-    
     public void soigner(int qnt) {
     	health = Math.min(4, health + qnt);
     }
@@ -56,4 +60,8 @@ public class Heros {
     public void ajouterCristal(int qnt) {
     	cristalCounter = Math.min(99,  cristalCounter+qnt);
     }
+    
+  
+    
+   
 }

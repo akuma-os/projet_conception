@@ -88,12 +88,25 @@ protected boolean InteractionRessource () {
     int y = heros.getY();
     int health = heros.getHealth();
     int cristalQuantity = heros.getMineralsQuantity();
+   
     
     Chambre chambreActuelle = labyrinthe.getChambreCourante();
     	boolean cleObtenus = chambreActuelle.estCle(x,y);
     	Ressource ressourceObtenus = chambreActuelle.estRessource(x,y);
+    	TypeRessource type = (ressourceObtenus != null) ? ressourceObtenus.getType() : null;
     	boolean potionObtenus = chambreActuelle.estPotionVie(x, y); 
     	boolean cristalObtenus = chambreActuelle.estCristal(x, y); 
+    	boolean armeObtenus = chambreActuelle.estArme(x, y); 
+    	
+    	
+    	
+		if(potionObtenus || armeObtenus) {
+			if (heros.getInventaire().estPlein()) {
+				return false;
+			}
+		}
+		
+		
     	if(chambreActuelle.RetirerRessource(x, y)) {
     		
     		//interaction clé
@@ -102,20 +115,9 @@ protected boolean InteractionRessource () {
     		
     		SetAffichePorte(true);
     		return true;
-    		}
-    		//interaction vie
-    		if(potionObtenus) {
-    			System.out.println("Heros a toucher une potion de vie !");
-    		
-    			
-    			
-    		if(health < 4) {
-    			heros.soigner(1);
-    			return true;
-    		}
-    		
     		
     		}
+    		
     		//interaction cristaux
     		if(cristalObtenus) {
         		System.out.println("Heros a toucher cristal !");
@@ -125,7 +127,22 @@ protected boolean InteractionRessource () {
         		return true;
         		}
     		
+    	
     		
+    		//interaction vie
+    		if(potionObtenus) {
+    			System.out.println("Heros a toucher une potion de vie !");
+    			heros.getInventaire().ajouterItem(type);
+    			System.out.println(heros.getInventaire());
+    		
+    		}
+    		
+    		
+    		if(armeObtenus) {
+    			System.out.println("heros a toucher une arme !");
+    			heros.getInventaire().ajouterItem(type);
+    			System.out.println(heros.getInventaire());
+    		}
     		
     		System.out.println("Heros a toucher ressource");
     		return true;
@@ -133,7 +150,25 @@ protected boolean InteractionRessource () {
     	return false;
     }
     
-    
+public void utiliserItem(int index) {
+    TypeRessource type = heros.getInventaire().getRessource(index);
+    System.out.println("3. utiliserItem index=" + index
+            + " type=" + heros.getInventaire().getRessource(index));
+    if (type == null) return;
+
+    switch (type) {
+        case POTION:
+            if (heros.getHealth() < 4) {
+                heros.soigner(1);
+                heros.getInventaire().retirerIndexItem(index);
+            }
+        case ARME :
+        	heros.getInventaire().retirerIndexItem(index);
+            break;
+        default:
+            break;
+    }
+}
 
     @Override
     public void evolve(Cmd userCmd) {

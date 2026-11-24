@@ -2,12 +2,14 @@
 package fr.ul.acl.controller;
 
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
 import engine.Cmd;
 import engine.GameController;
 import fr.ul.acl.model.LabyrintheGame;
+import fr.ul.acl.view.LabyrinthePainter;
 
 public class LabyrintheController implements GameController {
 
@@ -77,5 +79,16 @@ public class LabyrintheController implements GameController {
     @Override
     public void keyTyped(KeyEvent event) {
         // Aucune action spécifique n'est nécessaire ici.
+    }
+    
+    public synchronized void mouseClicked(int px, int py) {
+ 
+    	if (game == null) return;
+
+        int slot = LabyrinthePainter.posSlot(px, py);
+        if (slot != -1) {
+            game.utiliserItem(slot);
+            
+        }
     }
 }

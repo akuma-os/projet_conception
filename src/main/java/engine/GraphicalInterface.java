@@ -3,10 +3,16 @@ package engine;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+
 public class GraphicalInterface {
 
     private DrawingPanel panel;
-
+    
+    
+    public DrawingPanel getPanel() {
+        return panel;   
+    }
+    
     public GraphicalInterface(GamePainter gamePainter,
                               GameController gameController) {
 
@@ -31,4 +37,6 @@ public class GraphicalInterface {
     public void paint() {
         this.panel.drawGame();
     }
+    
+   
 }

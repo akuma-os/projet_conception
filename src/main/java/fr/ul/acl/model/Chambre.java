@@ -97,6 +97,7 @@ public class Chambre {
     	boolean cleObtenus = this.estCle(x,y);
     	boolean potionObtenus = this.estPotionVie(x,y);
     	boolean cristalObtenus = this.estCristal(x, y);
+    	boolean armeObtenus = this.estArme(x, y); 
     	
     	if(cleObtenus) {
     		 this.getRessources().removeIf(ressource -> 
@@ -125,6 +126,14 @@ public class Chambre {
    		 grille[y][x] = CASE_LIBRE;
    		 return cristalObtenus;	 
    	}
+    	
+    	if(armeObtenus) {
+      		 this.getRessources().removeIf(ressource -> 
+               ressource.getX() == x && ressource.getY() == y
+           );
+      		 grille[y][x] = CASE_LIBRE;
+      		 return armeObtenus;	 
+      	}
     		 
     	
     	return false;
@@ -188,14 +197,24 @@ public class Chambre {
            return r != null && r.getType() == TypeRessource.CLE;
        }
        
-    // Vérifier si une case est une potion de vie
+   
+       // Vérifier si une case est une potion de vie
        public boolean estPotionVie(int x, int y) {
            Ressource r = estRessource(x,y);
           
            return r != null && r.getType() == TypeRessource.POTION;
            
        }
-    
+       
+       // Vérifier si une case est une arme
+       public boolean estArme(int x, int y) {
+           Ressource r = estRessource(x,y);
+          
+           return r != null && r.getType() == TypeRessource.ARME;
+           
+       }
+       
+       
        // Vérifier si une case est un cristal 
        public boolean estCristal(int x, int y) {
            Ressource r = estRessource(x,y);
@@ -207,6 +226,39 @@ public class Chambre {
            
        }
        
+       public boolean emplacementLibre(Heros heros) {
+    	   return !heros.getInventaire().estPlein();
+       }
+       
+       public boolean recupereObjet(Heros heros, int x, int y) {
+    
+       
+       	Ressource ressource = estRessource(x,y);
+       	
+       	if(ressource == null) {
+       		return false;
+       	}
+       	
+       	switch (ressource.getType()) {
+       	case CRISTAL_BLEU :
+       	case CRISTAL_ROUGE :
+       	case CRISTAL_VIOLET :
+       	case CRISTAL_JAUNE :
+       	case CLE :
+       		return false; //sont ignorer et ne vont pas dans l'inventaire
+       		default :
+       			break; // les autres objets vont dans l'inventaire
+       	}
+       	
+        //vérifier la place disponible dans l'inventaire du héros 
+        if(!emplacementLibre(heros)) {
+        	return false;
+        }
+        
+        	RetirerRessource(x,y);
+        	System.out.println("l'objet "+ ressource.getType() + "a été ajouté");
+        	return heros.getInventaire().ajouterItem(ressource.getType());
+       }
        
     // Vérifier si le déplacement est possible
     public boolean deplacementPossible(int x, int y) {
@@ -236,5 +288,6 @@ public class Chambre {
 
         return grille[y][x] == OBSTACLE;
     }
+  
     
 }

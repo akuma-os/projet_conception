@@ -15,7 +15,9 @@ import fr.ul.acl.model.Chambre;
 import fr.ul.acl.model.Heros;
 import fr.ul.acl.model.Labyrinthe;
 import fr.ul.acl.model.LabyrintheGame;
-
+import java.awt.Rectangle;
+import fr.ul.acl.model.Inventaire;
+import fr.ul.acl.model.TypeRessource;
 public class LabyrinthePainter implements GamePainter {
 
     // =====================================================
@@ -25,7 +27,13 @@ public class LabyrinthePainter implements GamePainter {
     public static final int TAILLE_CASE = 30;
     public static final int TAILLE_FENETRE = 600;
     
-
+    private static final int SLOTS_INVENTAIRE = 8;
+    private static final int TAILLE_SLOTS_INVENTAIRE = 40;
+    private static final int ECART_SLOTS_INVENTAIRE = 4;
+    private static final int SLOTS_INVENTAIRE_X = TAILLE_FENETRE - TAILLE_SLOTS_INVENTAIRE;
+    private static final int SLOTS_INVENTAIRE_Y = 10;
+    private static int largeurEcranActu = TAILLE_FENETRE;
+    
     private final int TAILLE_HEROS = (int) (TAILLE_CASE * 3);
     private final int TAILLE_VIE = (int) (TAILLE_CASE * 10);
     private final int TAILLE_CRISTAUX = (int) (TAILLE_CASE*3);
@@ -112,11 +120,11 @@ public class LabyrinthePainter implements GamePainter {
     private static final int WALK_GAP_X = 0;
     private static final int WALK_GAP_Y = 0;
     
-    private static final int HEALTH_BAR_X = -900;
+    private static final int HEALTH_BAR_X = -10;
     private static final int HEALTH_BAR_Y = 0;
     
-    private static final int CRISTAL_BAR_X =600;
-    private static final int CRISTAL_BAR_Y = -100;
+    private static final int CRISTAL_BAR_X =1500;
+    private static final int CRISTAL_BAR_Y = -50;
 
     // =====================================================
     // 3. CONFIGURATION DE L'ANIMATION
@@ -432,6 +440,7 @@ public class LabyrinthePainter implements GamePainter {
         Heros heros = game.getHeros();
 
         int largeurEcran = im.getWidth();
+        largeurEcranActu = largeurEcran;
         int hauteurEcran = im.getHeight();
 
         // Calcul de la taille des cases
@@ -520,9 +529,10 @@ public class LabyrinthePainter implements GamePainter {
         dessinerHeros(crayon, heros, tailleCase);
         
         
-        crayon.translate(offsetX, offsetY);
+        crayon.translate(-offsetX, -offsetY);
         AfficherVie(crayon, heros, tailleCase);
         AfficherQuantiteCristal(crayon,heros,tailleCase);
+        afficherInventaire(crayon, heros);
         crayon.dispose();
     }
 
@@ -647,7 +657,7 @@ int sourceY = 0;
 
 if (sourceX + CRISTAL_FRAME_WIDTH > cristalCounterSheet.getWidth()
 || sourceY + CRISTAL_FRAME_HEIGHT > cristalCounterSheet.getHeight()) {
-System.out.println("Chiffre hors limites : " + chiffre);
+
 return;
 }
 
@@ -668,7 +678,61 @@ return;
 
     		
     }
+
+// 15 Affichage de l'inventaire ///////////////
+public static Rectangle getSlotRect(int i) {
+	
+	int inventaire_X = largeurEcranActu - TAILLE_SLOTS_INVENTAIRE - 10;
+    int inventaire_Y = SLOTS_INVENTAIRE_Y + i * (TAILLE_SLOTS_INVENTAIRE + ECART_SLOTS_INVENTAIRE);
+    int ecart_inventaire = ECART_SLOTS_INVENTAIRE ;
+    int taille_inventaire = TAILLE_SLOTS_INVENTAIRE;
     
+	return new Rectangle(inventaire_X, inventaire_Y,
+			taille_inventaire, taille_inventaire );
+}
+ 
+	public static int posSlot(int px, int py) {
+		for (int i=0 ; i < SLOTS_INVENTAIRE ; i++ ) {
+			if(getSlotRect(i).contains(px,py)) {
+				return i;
+			}
+			
+		}
+		return -1;
+	}
+	
+	private void afficherInventaire(Graphics2D crayon, Heros heros) {
+	    Inventaire inv = heros.getInventaire();
+	    int taille_slots_inv  = SLOTS_INVENTAIRE;
+	    
+	    for (int i = 0; i < taille_slots_inv ; i++) {
+	        Rectangle r = getSlotRect(i);
+	        
+	        crayon.setColor(new Color(0, 0, 0, 120));        // fond de case
+	        crayon.fillRect(r.x, r.y, r.width, r.height);
+	        crayon.setColor(Color.WHITE);                     // contour
+	        crayon.drawRect(r.x, r.y, r.width, r.height);
+
+	        TypeRessource type = inv.getRessource(i);
+	        if (type != null) {
+	            // Provisoire : un carré de couleur, à remplacer par un sprite
+	            crayon.setColor(couleurPour(type));
+	            crayon.fillRect(r.x + 6, r.y + 6, r.width - 12, r.height - 12);
+	        }
+	    }
+	}
+	
+	private Color couleurPour(TypeRessource type) {
+	    switch (type) {
+	        case POTION: return Color.RED;
+	        default:     return Color.ORANGE;
+	    }
+	}
+
+	
+	//16 Interaction de la souris //
+
+
 }
     
 
