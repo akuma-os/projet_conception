@@ -2,12 +2,15 @@
 package fr.ul.acl.controller;
 
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
 import engine.Cmd;
 import engine.GameController;
 import fr.ul.acl.model.LabyrintheGame;
+import fr.ul.acl.view.LabyrinthePainter;
+
 import javax.swing.JOptionPane;
 import fr.ul.acl.model.Question;
 public class LabyrintheController implements GameController {
@@ -159,5 +162,16 @@ public class LabyrintheController implements GameController {
         }
 
         game.terminerQuestionnaire();
+    }
+    
+    public synchronized void mouseClicked(int px, int py) {
+ 
+    	if (game == null) return;
+
+        int slot = LabyrinthePainter.posSlot(px, py);
+        if (slot != -1) {
+            game.utiliserItem(slot);
+            
+        }
     }
 }

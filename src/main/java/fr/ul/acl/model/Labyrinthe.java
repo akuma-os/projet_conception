@@ -67,6 +67,11 @@ public class Labyrinthe {
     public boolean estPorte(int x, int y) {
         return chambreActuelle.estPorte(x, y);
     }
+    
+ // Vérifie si une case correspond à une Ressource
+    public Ressource estRessource(int x, int y) {
+        return chambreCourante.estRessource(x, y);
+    }
 
     public boolean estObstacle(int x, int y) {
         return chambreActuelle.estObstacle(x, y);
@@ -91,5 +96,6 @@ public class Labyrinthe {
     public boolean estOccupeeParMonstre(int x, int y) {
         return chambreActuelle.estOccupeeParMonstre(x, y);
     }
+    
 }
 

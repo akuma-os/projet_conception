@@ -13,6 +13,7 @@ public class Main {
         LabyrintheController controller = new LabyrintheController(game);
 
         GameEngineGraphical engine = new GameEngineGraphical(game, painter, controller);
+        engine.setClickHandler((px, py) -> controller.mouseClicked(px, py));
         engine.run();
     }
 }

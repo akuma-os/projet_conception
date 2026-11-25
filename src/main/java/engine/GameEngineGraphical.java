@@ -1,5 +1,5 @@
 package engine;
-
+import java.util.function.BiConsumer;
 /**
  * @author Horatiu Cirstea, Vincent Thomas
  *
@@ -39,6 +39,11 @@ public class GameEngineGraphical {
 	 *            controlleur a utiliser
 	 *            
 	 */
+	private BiConsumer<Integer, Integer> clickHandler;
+	public void setClickHandler(BiConsumer<Integer, Integer> clickHandler) {
+	    this.clickHandler = clickHandler;
+	}
+	
 	public GameEngineGraphical(Game game, GamePainter gamePainter, GameController gameController) {
 		// creation du game
 		this.game = game;
@@ -54,6 +59,10 @@ public class GameEngineGraphical {
 		// creation de l'interface graphique
 		this.gui = new GraphicalInterface(this.gamePainter,this.gameController);
 
+		if (this.clickHandler != null) {
+		    this.gui.getPanel().setOnClick(this.clickHandler);
+		}
+
 		// boucle de game
 		while (!this.game.isFinished()) {
 			// demande controle utilisateur
@@ -66,5 +75,7 @@ public class GameEngineGraphical {
 			Thread.sleep(100);
 		}
 	}
-
+	
+	
+	
 }
