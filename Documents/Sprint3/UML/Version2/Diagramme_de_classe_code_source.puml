@@ -1,0 +1,202 @@
+@startuml
+title Sprint 3 - Diagramme de classes (Questionnaires et progression)
+
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+class LabyrintheGame {
+  - labyrinthe : Labyrinthe
+  - heros : Heros
+  - gestionnaireProgression : GestionnaireProgression
+  - questionnaireDeclenche : boolean
+  - questionnaireEnAttente : boolean
+
+  + evolve(cmd : Cmd)
+  + verifierTransition()
+  + verifierZoneQuestionnaire()
+  + validerMissionActuelle()
+  + simulerMissionTerminee()
+  + estQuestionnaireEnAttente() : boolean
+  + getQuestionActuelle() : Question
+  + repondreQuestionnaire(reponse : String) : boolean
+  + estQuestionnaireReussi() : boolean
+  + terminerQuestionnaire()
+}
+
+class Labyrinthe {
+  - chambres : List<Chambre>
+  - chambreCourante : Chambre
+
+  + getChambreActuelle() : Chambre
+  + changerChambre(id : int)
+}
+
+class Chambre {
+  - id : int
+  - grille : int[][]
+  - porte : Porte
+  - zoneQuestionnaire : ZoneQuestionnaire
+
+  + ajouterPorte(x : int, y : int)
+  + rendrePorteAccessible()
+  + ouvrirPorte(possedeCle : boolean)
+  + estPorteAccessible() : boolean
+  + estPorteOuverte() : boolean
+  + estPorte(x : int, y : int) : boolean
+  + ajouterZoneQuestionnaire(x : int, y : int)
+  + rendreZoneQuestionnaireAccessible()
+  + estDansZoneQuestionnaire(x : int, y : int) : boolean
+  + getZoneQuestionnaire() : ZoneQuestionnaire
+}
+
+class Heros {
+  - positionX : int
+  - positionY : int
+
+  + deplacer()
+  + setPosition(x : int, y : int)
+}
+
+class Porte {
+  - estVisible : boolean
+  - estOuverte : boolean
+
+  + apparaitre()
+  + ouvrir(possedeCle : boolean) : boolean
+}
+
+
+class ZoneQuestionnaire {
+  - x : int
+  - y : int
+  - accessible : boolean
+
+  + rendreAccessible()
+  + contientHeros(x : int, y : int) : boolean
+  + estAccessible() : boolean
+  + getX() : int
+  + getY() : int
+}
+
+class GestionnaireProgression {
+  - banqueQuestions : BanqueQuestions
+  - questionnaireActuel : Questionnaire
+  - idChambreActuelle : int
+  - missionTerminee : boolean
+  - questionnaireReussi : boolean
+  - cleObtenue : boolean
+  - porteAccessible : boolean
+  - zoneQuestionnaireAccessible : boolean
+
+  + validerMission()
+  + verifierMission()
+  + rendrePorteAccessible()
+  + lancerQuestionnaire()
+  + repondreQuestionnaire(reponse : String) : boolean
+  + attribuerCle()
+  + autoriserTransition() : boolean
+  + passerChambreSuivante()
+  + getQuestionActuelle() : Question
+}
+
+class Questionnaire {
+  - questions : List<Question>
+  - questionActuelle : Question
+  - reussi : boolean
+
+  + repondre(reponse : String) : boolean
+  + getQuestionActuelle() : Question
+  + estReussi() : boolean
+  + getNom() : String
+  + getCategorie() : Question.Categorie
+}
+
+class Question {
+  - enonce : String
+  - type : TypeQuestion
+  - categorie : Categorie
+  - propositions : List<String>
+  - bonneReponse : String
+
+  + verifierReponse(reponse : String) : boolean
+  + getEnonce() : String
+  + getType() : TypeQuestion
+  + getCategorie() : Categorie
+  + getPropositions() : List<String>
+  + getBonneReponse() : String
+}
+
+class BanqueQuestions {
+  - questions : EnumMap<Categorie, List<Question>>
+  - questionsRestantes : EnumMap<Categorie, List<Question>>
+  - random : Random
+  - derniereQuestion : Question
+
+  + ajouterQuestion(question : Question)
+  + obtenirQuestionAleatoire(categorie : Categorie) : Question
+  + getQuestions(categorie : Categorie) : List<Question>
+  + getNombreQuestions(categorie : Categorie) : int
+  + getNombreQuestionsRestantes(categorie : Categorie) : int
+  - ajouterQuestionsMathematiques()
+  - ajouterQuestionsCultureGenerale()
+  - ajouterQuestionsACL()
+  - liste(propositions : String...) : List<String>
+  - vraiFaux(enonce : String, categorie : Categorie, bonneReponse : String) : Question
+}
+
+enum TypeQuestion {
+  QCM
+  VRAI_FAUX
+}
+
+enum Categorie {
+  MATHEMATIQUES
+  CULTURE_GENERALE
+  ACL
+}
+
+
+class LabyrintheController {
+  - game : LabyrintheGame
+  + getCommand()
+  + afficherQuestionnaire()
+}
+
+class LabyrinthePainter {
+  - game : LabyrintheGame
+  + draw(im : BufferedImage)
+  + dessinerZoneQuestionnaire(crayon, x : int, y : int, tailleCase : int)
+}
+
+class ConstructeurChambres {
+  + creerChambre(id : int) : Chambre
+  - ajouterZoneCentrale(chambre : Chambre, grille : int[][])
+}
+
+
+
+LabyrintheGame --> Labyrinthe
+LabyrintheGame --> Heros
+LabyrintheGame --> GestionnaireProgression
+LabyrintheGame ..> LabyrintheController : déclenche questionnaire
+LabyrinthePainter --> LabyrintheGame
+
+Labyrinthe "1" *-- "4" Chambre
+Chambre "1" *-- "0..1" Porte
+Chambre "1" *-- "0..1" ZoneQuestionnaire
+
+ConstructeurChambres ..> Chambre : construit
+
+GestionnaireProgression --> BanqueQuestions
+GestionnaireProgression --> Questionnaire
+GestionnaireProgression --> Chambre : progression
+GestionnaireProgression ..> Porte : contrôle accès
+
+BanqueQuestions "1" o-- "0..*" Question
+Questionnaire "1" o-- "1..*" Question
+
+Question --> TypeQuestion
+Question --> Categorie
+Questionnaire --> Categorie
+
+@enduml

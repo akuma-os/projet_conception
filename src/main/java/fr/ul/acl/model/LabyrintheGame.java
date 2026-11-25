@@ -1,12 +1,6 @@
-
 package fr.ul.acl.model;
-
 import engine.Cmd;
 import engine.Game;
-
-
-
-
 public class LabyrintheGame implements Game {
 		/*
 	  private static final TypeRessource[][] RESSOURCE = {
@@ -106,70 +100,37 @@ public class LabyrintheGame implements Game {
         Chambre chambreActuelle = labyrinthe.getChambreActuelle();
 
         // Vérifier si le héros se trouve sur une porte // la porte existe, mais tant que le joueur ne récupère pas la clé, la porte n'est pas affiché et son interaction est impossible
-        if (chambreActuelle.estPorte(x, y) && AffichePorte) {
-
-            int niveauActuel = chambreActuelle.getId();
-            	
-            // Passer au niveau suivant
-            if (niveauActuel < 3) {
-        // Le héros est arrivé sur la porte
         if (chambreActuelle.estPorte(x, y)) {
 
-            // On tente d'ouvrir la porte avec la clé obtenue
-            boolean porteOuverte =
-                    chambreActuelle.ouvrirPorte(
-                            gestionnaireProgression.aCle()
-                    );
-
-            // On vérifie que la porte est ouverte
-            // et que la progression autorise le passage
-            if (porteOuverte
+            // Le passage est autorisé uniquement si le questionnaire
+            // a été validé et que la progression autorise la transition
+            if (gestionnaireProgression.estQuestionnaireReussi()
                     && gestionnaireProgression.autoriserTransition()) {
 
                 int idChambreActuelle = chambreActuelle.getId();
 
-                // Il n'y a pas de chambre après la chambre 3
                 if (idChambreActuelle < 3) {
 
                     int nouvelId = idChambreActuelle + 1;
 
-                   // Mise à jour de la progression
                     boolean progressionValidee =
                             gestionnaireProgression.passerChambreSuivante();
 
                     if (progressionValidee) {
-                        // Changement de chambre
+
                         labyrinthe.changerChambre(nouvelId);
 
-                System.out.println("Bienvenue dans la chambre "
-                        + nouvelId);
-                AffichePorte = false;
-                		
-                /*
-        				for ( int i = 0; i  < RESSOURCE.length; i++) {
-        					for (int j=0; j < RESSOURCE[i].length; j++) {
-        						System.out.println("Ressource ["+i+"] ["+j+"] = "+RESSOURCE[i][j]);
-        					}
-        				}*/
-        				
-        		
-                        // Repositionnement du héros
                         heros.setPosition(1, 1);
 
-                        // Autoriser le lancement du questionnaire de la nouvelle chambre
                         questionnaireDeclenche = false;
                         questionnaireEnAttente = false;
-                        // TEST TEMPORAIRE :
-                        // Simuler la validation de la mission dans la nouvelle chambre
+
                         simulerMissionTerminee();
                     }
                 }
             }
-          
         }
-            }
     }
-}
 protected boolean InteractionRessource () {
     	
 	int x = heros.getX();
@@ -209,7 +170,7 @@ protected boolean InteractionRessource () {
     		//interaction cristaux
     		if(cristalObtenus) {
         		System.out.println("Heros a toucher cristal !");
-        		
+        		heros.getInventaire().ajouterItem(type);
         		heros.ajouterCristal(1);
         		System.out.println(heros.getMineralsQuantity());
         		return true;

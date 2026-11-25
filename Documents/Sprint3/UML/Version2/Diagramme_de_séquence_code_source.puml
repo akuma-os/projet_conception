@@ -1,0 +1,117 @@
+@startuml
+title Sprint 3 - Validation de mission, questionnaire et progression
+
+actor Joueur
+participant LabyrintheGame
+participant Heros
+participant Mission
+participant GestionnaireProgression
+participant Chambre
+participant ZoneQuestionnaire
+participant BanqueQuestions
+participant Questionnaire
+participant Question
+participant LabyrintheController
+participant Porte
+participant Labyrinthe
+
+== Déroulement de la mission ==
+
+Joueur -> LabyrintheGame : jouer()
+LabyrintheGame -> Heros : deplacer()
+LabyrintheGame -> Mission : verifierObjectif(heros, chambre)
+Mission --> LabyrintheGame : resultat
+
+alt Mission non accomplie
+    note over LabyrintheGame, GestionnaireProgression
+      La mission doit être poursuivie.
+      La porte et la zone restent inaccessibles.
+    end note
+
+else Mission accomplie
+
+    LabyrintheGame -> GestionnaireProgression : validerMission()
+    GestionnaireProgression -> GestionnaireProgression : verifierMission()
+    GestionnaireProgression --> LabyrintheGame : mission validée
+
+    LabyrintheGame -> Chambre : rendrePorteAccessible()
+    Chambre -> Porte : rendre accessible()
+
+    LabyrintheGame -> Chambre : rendreZoneQuestionnaireAccessible()
+    Chambre -> ZoneQuestionnaire : rendreAccessible()
+
+    == Déclenchement du questionnaire ==
+
+    Joueur -> LabyrintheGame : atteindreZoneQuestionnaire()
+    LabyrintheGame -> Chambre : estDansZoneQuestionnaire(x, y)
+    Chambre --> LabyrintheGame : true
+
+    LabyrintheGame -> GestionnaireProgression : lancerQuestionnaire()
+    GestionnaireProgression -> BanqueQuestions : getQuestions(categorie)
+    BanqueQuestions --> GestionnaireProgression : liste de questions
+
+    GestionnaireProgression -> Questionnaire : créer questionnaire
+    Questionnaire -> BanqueQuestions : obtenirQuestionAleatoire(categorie)
+    BanqueQuestions --> Questionnaire : question actuelle
+
+    LabyrintheGame -> LabyrintheController : questionnaireEnAttente
+    LabyrintheController -> LabyrintheGame : getQuestionActuelle()
+    LabyrintheGame --> LabyrintheController : question actuelle
+    LabyrintheController --> Joueur : afficher question et propositions
+
+    == Réponses au questionnaire ==
+
+    loop Tant que le questionnaire n'est pas réussi
+
+        Joueur -> LabyrintheController : choisir réponse
+        LabyrintheController -> LabyrintheGame : repondreQuestionnaire(reponse)
+        LabyrintheGame -> GestionnaireProgression : repondreQuestionnaire(reponse)
+        GestionnaireProgression -> Questionnaire : repondre(reponse)
+        Questionnaire -> Question : verifierReponse(reponse)
+        Question --> Questionnaire : résultat
+
+        alt Réponse incorrecte
+            Questionnaire -> BanqueQuestions : obtenirQuestionAleatoire(categorie)
+            BanqueQuestions --> Questionnaire : nouvelle question
+            Questionnaire --> GestionnaireProgression : false
+            GestionnaireProgression --> LabyrintheGame : false
+            LabyrintheGame --> LabyrintheController : questionnaire non réussi
+            LabyrintheController --> Joueur : afficher la prochaine question
+
+        else Réponse correcte
+            Questionnaire --> GestionnaireProgression : true
+            GestionnaireProgression -> GestionnaireProgression : attribuerCle()
+            GestionnaireProgression --> LabyrintheGame : questionnaire réussi
+            LabyrintheGame --> LabyrintheController : questionnaire réussi
+            LabyrintheController --> Joueur : afficher réussite et clé obtenue
+        end
+
+    end
+
+    LabyrintheController -> LabyrintheGame : terminerQuestionnaire()
+
+    == Ouverture de la porte et transition ==
+
+    Joueur -> LabyrintheGame : atteindrePorte()
+    LabyrintheGame -> Chambre : ouvrirPorte(gestionnaireProgression.aCle())
+    Chambre -> Porte : ouvrir(possedeCle)
+    Porte --> Chambre : porte ouverte
+    Chambre --> LabyrintheGame : résultat ouverture
+
+    LabyrintheGame -> GestionnaireProgression : autoriserTransition()
+
+    alt Transition autorisée
+        GestionnaireProgression --> LabyrintheGame : true
+        LabyrintheGame -> GestionnaireProgression : passerChambreSuivante()
+        GestionnaireProgression --> LabyrintheGame : nouvel identifiant
+        LabyrintheGame -> Labyrinthe : changerChambre(nouvelId)
+        Labyrinthe --> LabyrintheGame : nouvelle chambre
+        LabyrintheGame -> Heros : setPosition(1, 1)
+    else Transition refusée
+        GestionnaireProgression --> LabyrintheGame : false
+        LabyrintheGame --> Joueur : passage impossible
+    end
+
+end
+
+@enduml

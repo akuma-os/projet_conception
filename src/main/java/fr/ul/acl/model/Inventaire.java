@@ -17,7 +17,7 @@ public class Inventaire {
 	
 	public boolean estPlein() {
 		
-		if (objets.size() > capacite) {
+		if (objets.size() >= capacite) {
 			return true;
 		}
 		return false;
@@ -36,13 +36,7 @@ public class Inventaire {
 	}
 	
 	public boolean retirerItem(TypeRessource ressource) {
-		if(capacite == 0) {
-			return false;
-		}
-		else {
-			objets.remove(ressource);
-			return false;
-		}
+		return objets.remove(ressource);
 	}
 
 	public TypeRessource getRessource(int i) {
