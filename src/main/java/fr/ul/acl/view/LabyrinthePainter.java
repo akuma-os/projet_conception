@@ -721,8 +721,19 @@ public class LabyrinthePainter implements GamePainter {
         for (Monstre monstre : labyrinthe.getMonstres()) {
 
                 if (!monstre.estElimine()) {
+                    if (monstre.getDifficulte() == "facile") {
+                        crayon.setColor(Color.GREEN);
+                    }
+                    if (monstre.getDifficulte() == "intermediaire") {
+                        crayon.setColor(Color.ORANGE);
+                    }
+                    if (monstre.getDifficulte() == "difficile") {
+                        crayon.setColor(Color.RED);
+                    }
+                    if (monstre.getDifficulte() == "boss") {
+                        crayon.setColor(Color.BLACK);
+                    }
 
-                crayon.setColor(Color.RED);
 
                 crayon.fillOval(
                         monstre.getX() * tailleCase,
