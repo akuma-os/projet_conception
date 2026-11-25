@@ -70,7 +70,7 @@ public class Labyrinthe {
     
  // Vérifie si une case correspond à une Ressource
     public Ressource estRessource(int x, int y) {
-        return chambreCourante.estRessource(x, y);
+        return chambreActuelle.estRessource(x, y);
     }
 
     public boolean estObstacle(int x, int y) {

@@ -41,8 +41,7 @@ public class LabyrinthePainter implements GamePainter {
     private final int TAILLE_VIE = (int) (TAILLE_CASE * 10);
     private final int TAILLE_CRISTAUX = (int) (TAILLE_CASE*3);
 
-    private static final Color COULEUR_FOND =
-            new Color(121, 168, 75);
+    
 
     private final int TAILLE_HEROS = TAILLE_CASE * 3;
 
@@ -637,9 +636,7 @@ public class LabyrinthePainter implements GamePainter {
                     RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR
             );
 
-        int largeurEcran = im.getWidth();
-        largeurEcranActu = largeurEcran;
-        int hauteurEcran = im.getHeight();
+        
             Labyrinthe labyrinthe = game.getLabyrinthe();
             Heros heros = game.getHeros();
 
@@ -647,6 +644,7 @@ public class LabyrinthePainter implements GamePainter {
 
             int largeurEcran = im.getWidth();
             int hauteurEcran = im.getHeight();
+            largeurEcranActu = largeurEcran;
 
             // Identifier la chambre actuelle
             int idChambre = chambreActuelle.getId();
@@ -720,7 +718,6 @@ public class LabyrinthePainter implements GamePainter {
             DecorPainter.dessiner(
                     crayon,
                     labyrinthe.getDecors(),
-                    labyrinthe.getRessources(),
                     tailleCase
             );
 
@@ -747,6 +744,7 @@ public class LabyrinthePainter implements GamePainter {
             
 
         } finally {
+            
             crayon.dispose();
         }
     }
@@ -838,7 +836,7 @@ public class LabyrinthePainter implements GamePainter {
     private void AfficherQuantiteCristal(
     		Graphics2D crayon,
     		Heros heros,
-    		 int tailleCase)
+    		int tailleCase)
     {
     	
 
@@ -949,7 +947,7 @@ public static Rectangle getSlotRect(int i) {
 	//16 Interaction de la souris //
 
 
-}
+
     
 
     private void dessinerMonstres(Graphics2D crayon,

@@ -14,7 +14,7 @@ L'objectif de ce sprint était de faire évoluer le jeu « Balade dans un labyri
 | Évolution graphique des environnements des chambres | Validé |
 | Déplacement et détection des monstres | validé |
 | Gestion des vies du héros | Non validé |
-| Collecte et gestion des ressources | Non validé |
+| Collecte et gestion des ressources |  validé , non intégré|
 | Gestion des missions des quatre chambres | Non validé |
 | Système de combat et interactions avec les monstres | Non validé |
 | Tests d'intégration de l'ensemble des fonctionnalités | Non validé |

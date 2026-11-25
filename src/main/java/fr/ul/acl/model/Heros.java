@@ -37,7 +37,7 @@ public class Heros {
     }
     
     public Inventaire getInventaire() {
-    	return inventaire;
+    	return inventaire;}
     public void setPosition(int x, int y) {
         this.x = x;
         this.y = y;

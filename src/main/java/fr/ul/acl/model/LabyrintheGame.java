@@ -142,7 +142,7 @@ public class LabyrintheGame implements Game {
                         labyrinthe.changerChambre(nouvelId);
 
                 System.out.println("Bienvenue dans la chambre "
-                        + niveauSuivant);
+                        + nouvelId);
                 AffichePorte = false;
                 		
                 /*
@@ -167,8 +167,9 @@ public class LabyrintheGame implements Game {
             }
           
         }
+            }
     }
-    
+}
 protected boolean InteractionRessource () {
     	
 	int x = heros.getX();
@@ -177,7 +178,7 @@ protected boolean InteractionRessource () {
     int cristalQuantity = heros.getMineralsQuantity();
    
     
-    Chambre chambreActuelle = labyrinthe.getChambreCourante();
+    Chambre chambreActuelle = labyrinthe.getChambreActuelle();
     	boolean cleObtenus = chambreActuelle.estCle(x,y);
     	Ressource ressourceObtenus = chambreActuelle.estRessource(x,y);
     	TypeRessource type = (ressourceObtenus != null) ? ressourceObtenus.getType() : null;

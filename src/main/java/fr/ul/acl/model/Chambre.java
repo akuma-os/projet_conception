@@ -165,17 +165,7 @@ public class Chambre {
     
     
     
-    // Ajouter une porte sur une case libre
-    public void ajouterPorte(int x, int y) {  
-        		   if (x >= 0 && x < largeur
-        	                && y >= 0 && y < hauteur
-        	                && grille[y][x] == CASE_LIBRE) {
-        	    		
-        	            grille[y][x] = PORTE;
-        	   }
-           
-    	
-        }
+
 
     public void ajouterMonstre(Monstre monstre) {
         monstres.add(monstre);
