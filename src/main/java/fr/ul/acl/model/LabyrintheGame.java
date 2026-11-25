@@ -33,22 +33,77 @@ public class LabyrintheGame implements Game {
     }
     
     
-	public boolean RessourceEstTouche = false;
+	  public boolean RessourceEstTouche = false;
+    private GestionnaireProgression gestionnaireProgression;
     private Heros heros;
     private Labyrinthe labyrinthe;
+    private int compteurTours = 0;
+    private final GestionnaireCombat gestionnaireCombat = new GestionnaireCombat();
 
+    private boolean questionnaireDeclenche;
+    private boolean questionnaireEnAttente;
     public LabyrintheGame() {
         this.labyrinthe = new Labyrinthe();
         this.heros = new Heros(1, 1);
+        BanqueQuestions banqueQuestions = new BanqueQuestions();
+        this.gestionnaireProgression =
+            new GestionnaireProgression(banqueQuestions);
+        this.questionnaireDeclenche = false;
+        this.questionnaireEnAttente = false;
+         // TEST TEMPORAIRE : mission considérée comme terminée
+        validerMissionActuelle();
     }
 
-    // Vérifier si le héros a atteint une porte
+    // Appelée lorsque la mission de la chambre actuelle est terminée
+    public void validerMissionActuelle() {
+
+        // 1. Le gestionnaire valide la mission
+        gestionnaireProgression.validerMission();
+
+        // 2. Si la porte devient accessible,
+        // on la rend réellement visible dans la chambre
+        if (gestionnaireProgression.estPorteAccessible()) {
+
+            Chambre chambreActuelle =
+                    labyrinthe.getChambreActuelle();
+
+            chambreActuelle.rendrePorteAccessible();
+            chambreActuelle.rendreZoneQuestionnaireAccessible();
+        }
+    }
+    // Simuler la fin de mission pour les tests
+    public void simulerMissionTerminee() {
+        validerMissionActuelle();
+    }
+    private void verifierZoneQuestionnaire() {
+
+        Chambre chambreActuelle = labyrinthe.getChambreActuelle();
+
+        // La chambre finale ne possède pas de questionnaire
+        if (chambreActuelle.getId() >= 3) {
+            return;
+        }
+
+        if (chambreActuelle.estDansZoneQuestionnaire(
+                heros.getX(), heros.getY())) {
+
+            if (!questionnaireDeclenche) {
+
+                gestionnaireProgression.lancerQuestionnaire();
+
+                questionnaireDeclenche = true;
+                questionnaireEnAttente = true;
+
+                System.out.println("Zone de questionnaire atteinte !");
+            }
+        }
+    }
     private void verifierTransition() {
 
         int x = heros.getX();
         int y = heros.getY();
 
-        Chambre chambreActuelle = labyrinthe.getChambreCourante();
+        Chambre chambreActuelle = labyrinthe.getChambreActuelle();
 
         // Vérifier si le héros se trouve sur une porte // la porte existe, mais tant que le joueur ne récupère pas la clé, la porte n'est pas affiché et son interaction est impossible
         if (chambreActuelle.estPorte(x, y) && AffichePorte) {
@@ -57,13 +112,34 @@ public class LabyrintheGame implements Game {
             	
             // Passer au niveau suivant
             if (niveauActuel < 3) {
+        // Le héros est arrivé sur la porte
+        if (chambreActuelle.estPorte(x, y)) {
 
-                int niveauSuivant = niveauActuel + 1;
+            // On tente d'ouvrir la porte avec la clé obtenue
+            boolean porteOuverte =
+                    chambreActuelle.ouvrirPorte(
+                            gestionnaireProgression.aCle()
+                    );
 
-                labyrinthe.changerChambre(niveauSuivant);
+            // On vérifie que la porte est ouverte
+            // et que la progression autorise le passage
+            if (porteOuverte
+                    && gestionnaireProgression.autoriserTransition()) {
 
-                // Placer le héros à l'entrée de la nouvelle chambre
-                heros = new Heros(1, 1);
+                int idChambreActuelle = chambreActuelle.getId();
+
+                // Il n'y a pas de chambre après la chambre 3
+                if (idChambreActuelle < 3) {
+
+                    int nouvelId = idChambreActuelle + 1;
+
+                   // Mise à jour de la progression
+                    boolean progressionValidee =
+                            gestionnaireProgression.passerChambreSuivante();
+
+                    if (progressionValidee) {
+                        // Changement de chambre
+                        labyrinthe.changerChambre(nouvelId);
 
                 System.out.println("Bienvenue dans la chambre "
                         + niveauSuivant);
@@ -77,6 +153,17 @@ public class LabyrintheGame implements Game {
         				}*/
         				
         		
+                        // Repositionnement du héros
+                        heros.setPosition(1, 1);
+
+                        // Autoriser le lancement du questionnaire de la nouvelle chambre
+                        questionnaireDeclenche = false;
+                        questionnaireEnAttente = false;
+                        // TEST TEMPORAIRE :
+                        // Simuler la validation de la mission dans la nouvelle chambre
+                        simulerMissionTerminee();
+                    }
+                }
             }
           
         }
@@ -191,15 +278,23 @@ public void utiliserItem(int index) {
                 heros.deplacer(1, 0, labyrinthe);
                 break;
 
+            case ATTACK:
+                attaquerMonstre();
+                break;
+
             case IDLE:
             default:
                 break;
         }
+        // Vérifier si le héros est entré dans la zone de questionnaire
+        verifierZoneQuestionnaire();
 
-        // Vérifier la porte après le déplacement
+        // Vérifier ensuite la porte
         verifierTransition();
         //Vérifie l'interaction avec les ressources
         InteractionRessource ();
+
+        deplacerMonstres();
     }
 
     @Override
@@ -213,5 +308,56 @@ public void utiliserItem(int index) {
 
     public Labyrinthe getLabyrinthe() {
         return labyrinthe;
+    }
+
+    private void deplacerMonstres() {
+        compteurTours++;
+
+        if (compteurTours >= 5) {
+
+            for (Monstre monstre : labyrinthe.getMonstres()) {
+                monstre.agir(heros, labyrinthe);
+            }
+
+            compteurTours = 0;
+        }
+    }
+
+    private void attaquerMonstre() {
+
+        for (Monstre monstre : labyrinthe.getMonstres()) {
+
+            if (!monstre.estElimine()
+                    && gestionnaireCombat.estAPortee(heros, monstre)) {
+
+                gestionnaireCombat.attaquer(heros, monstre);
+
+                return;
+            }
+        }}
+    // Indique au contrôleur qu'un questionnaire doit être affiché
+    public boolean estQuestionnaireEnAttente() {
+        return questionnaireEnAttente;
+    }
+
+    // Récupérer la question actuelle
+    public Question getQuestionActuelle() {
+        return gestionnaireProgression.getQuestionActuelle();
+    }
+
+    // Transmettre la réponse du joueur au gestionnaire
+    public boolean repondreQuestionnaire(String reponse) {
+
+        return gestionnaireProgression.repondreQuestionnaire(reponse);
+    }
+
+    // Vérifier si le questionnaire est réussi
+    public boolean estQuestionnaireReussi() {
+        return gestionnaireProgression.estQuestionnaireReussi();
+    }
+
+    // Terminer l'affichage du questionnaire
+    public void terminerQuestionnaire() {
+        questionnaireEnAttente = false;
     }
 }

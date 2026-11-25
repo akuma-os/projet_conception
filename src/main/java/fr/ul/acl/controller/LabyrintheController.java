@@ -11,10 +11,14 @@ import engine.GameController;
 import fr.ul.acl.model.LabyrintheGame;
 import fr.ul.acl.view.LabyrinthePainter;
 
+import javax.swing.JOptionPane;
+import fr.ul.acl.model.Question;
 public class LabyrintheController implements GameController {
 
     // Mémorise les touches actuellement maintenues
     private final List<Integer> touchesAppuyees = new ArrayList<>();
+
+    private boolean attaqueDemandee = false;
 
     private final LabyrintheGame game;
 
@@ -34,6 +38,10 @@ public class LabyrintheController implements GameController {
         // Évite les doublons dus à la répétition automatique du clavier
         if (!touchesAppuyees.contains(touche)) {
             touchesAppuyees.add(touche);
+
+            if (touche == KeyEvent.VK_SPACE){
+                attaqueDemandee = true;
+            }
         }
     }
 
@@ -47,7 +55,18 @@ public class LabyrintheController implements GameController {
     @Override
     public synchronized Cmd getCommand() {
 
+        if (attaqueDemandee) {
+            attaqueDemandee = false;
+            return Cmd.ATTACK;
+        }
+
         // On parcourt les touches de la plus récente à la plus ancienne
+        // Vérifier si un questionnaire doit être affiché
+        if (game != null && game.estQuestionnaireEnAttente()) {
+            afficherQuestionnaire();
+        }
+
+        // Gestion normale des touches du clavier
         for (int i = touchesAppuyees.size() - 1; i >= 0; i--) {
 
             int touche = touchesAppuyees.get(i);
@@ -78,7 +97,71 @@ public class LabyrintheController implements GameController {
 
     @Override
     public void keyTyped(KeyEvent event) {
-        // Aucune action spécifique n'est nécessaire ici.
+    }
+    private void afficherQuestionnaire() {
+
+        while (game.estQuestionnaireEnAttente()
+                && !game.estQuestionnaireReussi()) {
+
+            Question question = game.getQuestionActuelle();
+
+            if (question == null) {
+                break;
+            }
+
+            // Préparer les choix de réponses
+            Object[] choix;
+
+            if (question.getType() == Question.TypeQuestion.VRAI_FAUX) {
+
+                choix = new Object[]{"Vrai", "Faux"};
+
+            } else {
+
+                choix = question.getPropositions().toArray();
+            }
+
+            // Afficher la question
+            Object reponse = JOptionPane.showInputDialog(
+                    null,
+                    question.getEnonce(),
+                    "Questionnaire",
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    choix,
+                    choix[0]
+            );
+
+            // Si le joueur ferme la fenêtre, on lui redemande de répondre
+            if (reponse == null) {
+                continue;
+            }
+
+            // Transmettre la réponse au modèle
+            boolean correcte = game.repondreQuestionnaire(reponse.toString());
+
+            if (correcte) {
+
+                JOptionPane.showMessageDialog(
+                        null,
+                        "Bravo ! Bonne réponse.\n"
+                        + "Tu as obtenu la clé de cette chambre !",
+                        "Questionnaire réussi",
+                        JOptionPane.INFORMATION_MESSAGE
+                );
+
+            } else {
+
+                JOptionPane.showMessageDialog(
+                        null,
+                        "Mauvaise réponse ! Essaie la question suivante.",
+                        "Réponse incorrecte",
+                        JOptionPane.WARNING_MESSAGE
+                );
+            }
+        }
+
+        game.terminerQuestionnaire();
     }
     
     public synchronized void mouseClicked(int px, int py) {

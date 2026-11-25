@@ -1,15 +1,13 @@
-
 package fr.ul.acl.view;
-
+import java.util.EnumMap;
+import java.util.Map;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-
 import javax.imageio.ImageIO;
-
 import engine.GamePainter;
 import fr.ul.acl.model.Chambre;
 import fr.ul.acl.model.Heros;
@@ -18,6 +16,11 @@ import fr.ul.acl.model.LabyrintheGame;
 import java.awt.Rectangle;
 import fr.ul.acl.model.Inventaire;
 import fr.ul.acl.model.TypeRessource;
+import fr.ul.acl.model.Monstre;
+
+import fr.ul.acl.model.Theme;
+import java.awt.Font;
+import java.awt.FontMetrics;
 public class LabyrinthePainter implements GamePainter {
 
     // =====================================================
@@ -34,34 +37,56 @@ public class LabyrinthePainter implements GamePainter {
     private static final int SLOTS_INVENTAIRE_Y = 10;
     private static int largeurEcranActu = TAILLE_FENETRE;
     
-    private final int TAILLE_HEROS = (int) (TAILLE_CASE * 3);
+   
     private final int TAILLE_VIE = (int) (TAILLE_CASE * 10);
     private final int TAILLE_CRISTAUX = (int) (TAILLE_CASE*3);
 
     private static final Color COULEUR_FOND =
             new Color(121, 168, 75);
 
-    private static final Color COULEUR_MUR =
-            new Color(121, 83, 51);
+    private final int TAILLE_HEROS = TAILLE_CASE * 3;
+
+    // Couleurs de secours si une texture est introuvable
+    private static final Color COULEUR_FOND = new Color(121, 168, 75);
+    private static final Color COULEUR_MUR = new Color(121, 83, 51);
+    private static final Color COULEUR_MUR_NEIGE = new Color(190, 200, 210);
 
     // Couleurs de la porte
-   
-    private static final Color COULEUR_CONTOUR_PORTE =
-            new Color(65, 35, 20);
-
-    private static final Color COULEUR_PORTE =
-            new Color(139, 69, 19);
-
-    private static final Color COULEUR_PLANCHES =
-            new Color(105, 50, 18);
-
-    private static final Color COULEUR_POIGNEE =
-            new Color(255, 215, 0);
+    private static final Color COULEUR_CONTOUR_PORTE = new Color(65, 35, 20);
+    private static final Color COULEUR_PORTE = new Color(139, 69, 19);
+    private static final Color COULEUR_PLANCHES = new Color(105, 50, 18);
+    private static final Color COULEUR_POIGNEE = new Color(255, 215, 0);
 
     private final LabyrintheGame game;
 
     // =====================================================
-    // 2. CONFIGURATION DES SPRITESHEETS
+    // 2. TEXTURES DES CHAMBRES
+    // =====================================================
+    // Les noms doivent correspondre exactement aux fichiers
+    // présents dans src/main/resources.
+
+    private static final String SOL_FORET = "sol_foret.png";
+    private static final String MUR_FORET = "mur_foret.png";
+
+    private static final String SOL_ZOMBIE = "sol_zombies.png";
+    private static final String MUR_ZOMBIE = "mur_zombies.png";
+
+    private static final String SOL_VOLCAN = "sol_volcan.png";
+    private static final String MUR_VOLCAN = "mur_volcan.png";
+
+    private static final String FOND_MONTAGNE = "mountain_background.jpg";
+
+        // Couleurs de la zone de questionnaire
+    private static final Color COULEUR_ZONE_QUESTIONNAIRE =
+                new Color(220, 45, 45);
+
+    private static final Color CONTOUR_ZONE_QUESTIONNAIRE =
+                new Color(120, 0, 0);
+
+    private static final Color COULEUR_SYMBOLE_QUESTIONNAIRE =
+                Color.WHITE;
+    // =====================================================
+    // 3. CONFIGURATION DES SPRITESHEETS DU HEROS
     // =====================================================
 
     private static final String IDLE_PATH =
@@ -88,10 +113,7 @@ public class LabyrinthePainter implements GamePainter {
     private static final int CRISTAL_FRAME_HEIGHT = 64;
     
     private static final int[] WALK_FRAME_COUNTS = {
-            12,
-            12,
-            12,
-            4
+            12, 12, 12, 4
     };
 
     // Directions
@@ -127,14 +149,14 @@ public class LabyrinthePainter implements GamePainter {
     private static final int CRISTAL_BAR_Y = -50;
 
     // =====================================================
-    // 3. CONFIGURATION DE L'ANIMATION
+    // 4. CONFIGURATION DE L'ANIMATION
     // =====================================================
 
     private static final long ANIMATION_SPEED = 120;
     private static final long MOVEMENT_TIMEOUT = 250;
 
     // =====================================================
-    // 4. IMAGES ET VARIABLES D'ANIMATION
+    // 5. IMAGES ET VARIABLES D'ANIMATION
     // =====================================================
 
     private BufferedImage idleSheet;
@@ -155,11 +177,10 @@ public class LabyrinthePainter implements GamePainter {
     
 
     // =====================================================
-    // 5. CONSTRUCTEUR
+    // 6. CONSTRUCTEUR
     // =====================================================
 
     public LabyrinthePainter(LabyrintheGame game) {
-
         this.game = game;
 
         idleSheet = chargerImage(IDLE_PATH);
@@ -169,13 +190,11 @@ public class LabyrinthePainter implements GamePainter {
     }
 
     // =====================================================
-    // 6. CHARGEMENT DES IMAGES
+    // 7. CHARGEMENT DES IMAGES
     // =====================================================
 
     private BufferedImage chargerImage(String chemin) {
-
-        try (InputStream input =
-                     getClass().getResourceAsStream(chemin)) {
+        try (InputStream input = getClass().getResourceAsStream(chemin)) {
 
             if (input == null) {
                 throw new IllegalArgumentException(
@@ -185,14 +204,13 @@ public class LabyrinthePainter implements GamePainter {
             return ImageIO.read(input);
 
         } catch (IOException e) {
-
             throw new RuntimeException(
                     "Erreur lors du chargement de " + chemin, e);
         }
     }
 
     // =====================================================
-    // 7. DETECTION DE LA DIRECTION
+    // 8. DETECTION DE LA DIRECTION
     // =====================================================
 
     private void detecterDirection(int x, int y) {
@@ -214,9 +232,7 @@ public class LabyrinthePainter implements GamePainter {
         }
 
         if (x != ancienneX || y != ancienneY) {
-
             dernierDeplacement = System.currentTimeMillis();
-
             frameActuelle = 0;
             dernierChangementFrame = dernierDeplacement;
         }
@@ -226,15 +242,13 @@ public class LabyrinthePainter implements GamePainter {
     }
 
     // =====================================================
-    // 8. MISE A JOUR DE L'ANIMATION
+    // 9. MISE A JOUR DE L'ANIMATION
     // =====================================================
 
     private boolean estEnMouvement() {
-
         long maintenant = System.currentTimeMillis();
 
-        return maintenant - dernierDeplacement
-                < MOVEMENT_TIMEOUT;
+        return maintenant - dernierDeplacement < MOVEMENT_TIMEOUT;
     }
 
     private void mettreAJourAnimation() {
@@ -243,26 +257,21 @@ public class LabyrinthePainter implements GamePainter {
 
         if (estEnMouvement()) {
 
-            if (maintenant - dernierChangementFrame
-                    >= ANIMATION_SPEED) {
+            if (maintenant - dernierChangementFrame >= ANIMATION_SPEED) {
 
-                int nombreFrames =
-                        WALK_FRAME_COUNTS[directionActuelle];
+                int nombreFrames = WALK_FRAME_COUNTS[directionActuelle];
 
-                frameActuelle =
-                        (frameActuelle + 1) % nombreFrames;
-
+                frameActuelle = (frameActuelle + 1) % nombreFrames;
                 dernierChangementFrame = maintenant;
             }
 
         } else {
-
             frameActuelle = 0;
         }
     }
 
     // =====================================================
-    // 9. DESSIN DU HEROS
+    // 10. DESSIN DU HEROS
     // =====================================================
 
     private void dessinerHeros(
@@ -289,44 +298,32 @@ public class LabyrinthePainter implements GamePainter {
         if (estEnMouvement()) {
 
             image = walkSheet;
-
             frameWidth = WALK_FRAME_WIDTH;
             frameHeight = WALK_FRAME_HEIGHT;
-
             startX = WALK_START_X;
             startY = WALK_START_Y;
-
             gapX = WALK_GAP_X;
             gapY = WALK_GAP_Y;
-
             ligne = directionActuelle;
 
         } else {
 
             image = idleSheet;
-
             frameWidth = IDLE_FRAME_WIDTH;
             frameHeight = IDLE_FRAME_HEIGHT;
-
             startX = IDLE_START_X;
             startY = IDLE_START_Y;
-
             gapX = IDLE_GAP_X;
             gapY = IDLE_GAP_Y;
-
             ligne = directionActuelle;
         }
 
-        int sourceX = startX
-                + frameActuelle * (frameWidth + gapX);
-
-        int sourceY = startY
-                + ligne * (frameHeight + gapY);
+        int sourceX = startX + frameActuelle * (frameWidth + gapX);
+        int sourceY = startY + ligne * (frameHeight + gapY);
 
         if (sourceX < 0 || sourceY < 0
                 || sourceX + frameWidth > image.getWidth()
                 || sourceY + frameHeight > image.getHeight()) {
-
             return;
         }
 
@@ -354,7 +351,160 @@ public class LabyrinthePainter implements GamePainter {
     }
 
     // =====================================================
-    // 10. DESSIN DE LA PORTE
+    // 11. SELECTION DES TEXTURES SELON LA CHAMBRE
+    // =====================================================
+
+    private BufferedImage getTextureSol(int idChambre) {
+
+        switch (idChambre) {
+            case 0:
+                return SpriteLoader.get(SOL_FORET);
+
+            case 1:
+                return SpriteLoader.get(SOL_ZOMBIE);
+
+            case 2:
+                return SpriteLoader.get(SOL_VOLCAN);
+
+            case 3:
+                // La chambre montagne utilise son arrière-plan.
+                // On ne dessine donc pas de texture de sol opaque.
+                return null;
+
+            default:
+                return null;
+        }
+    }
+
+    private BufferedImage getTextureMur(int idChambre) {
+
+        switch (idChambre) {
+            case 0:
+                return SpriteLoader.get(MUR_FORET);
+
+            case 1:
+                return SpriteLoader.get(MUR_ZOMBIE);
+
+            case 2:
+                return SpriteLoader.get(MUR_VOLCAN);
+
+            case 3:
+                // Si tu ajoutes une texture de mur de neige,
+                // remplace null par SpriteLoader.get("nom_du_mur.png").
+                return null;
+
+            default:
+                return null;
+        }
+    }
+
+    // =====================================================
+    // 12. DESSIN DU FOND SELON LA CHAMBRE
+    // =====================================================
+
+    private void dessinerFond(
+            Graphics2D crayon,
+            int idChambre,
+            int largeur,
+            int hauteur) {
+
+        if (idChambre == 3) {
+
+            BufferedImage fond = SpriteLoader.get(FOND_MONTAGNE);
+
+            if (fond != null) {
+                crayon.drawImage(fond, 0, 0, largeur, hauteur, null);
+            } else {
+                crayon.setColor(new Color(220, 235, 245));
+                crayon.fillRect(0, 0, largeur, hauteur);
+            }
+
+        } else {
+
+            crayon.setColor(COULEUR_FOND);
+            crayon.fillRect(0, 0, largeur, hauteur);
+        }
+    }
+
+    // =====================================================
+    // 13. DESSIN DU SOL ET DES MURS
+    // =====================================================
+
+    private void dessinerTerrain(
+            Graphics2D crayon,
+            Labyrinthe labyrinthe,
+            int tailleCase,
+            int idChambre) {
+
+        BufferedImage textureSol = getTextureSol(idChambre);
+        BufferedImage textureMur = getTextureMur(idChambre);
+
+        for (int y = 0; y < labyrinthe.getHauteur(); y++) {
+
+            for (int x = 0; x < labyrinthe.getLargeur(); x++) {
+
+                int px = x * tailleCase;
+                int py = y * tailleCase;
+
+                if (labyrinthe.estMur(x, y)) {
+
+                    // Dessin des murs
+                    if (textureMur != null) {
+
+                        crayon.drawImage(
+                                textureMur,
+                                px, py,
+                                tailleCase, tailleCase,
+                                null
+                        );
+
+                    } else {
+
+                        if (idChambre == 3) {
+                            crayon.setColor(COULEUR_MUR_NEIGE);
+                        } else {
+                            crayon.setColor(COULEUR_MUR);
+                        }
+
+                        crayon.fillRect(
+                                px, py,
+                                tailleCase, tailleCase
+                        );
+                    }
+
+                } else {
+
+                    // Dans la chambre 3, on laisse visible
+                    // l'arrière-plan montagne sous les cases libres.
+                    if (idChambre == 3) {
+                        continue;
+                    }
+
+                    // Dessin du sol des autres chambres
+                    if (textureSol != null) {
+
+                        crayon.drawImage(
+                                textureSol,
+                                px, py,
+                                tailleCase, tailleCase,
+                                null
+                        );
+
+                    } else {
+
+                        crayon.setColor(COULEUR_FOND);
+                        crayon.fillRect(
+                                px, py,
+                                tailleCase, tailleCase
+                        );
+                    }
+                }
+            }
+        }
+    }
+
+    // =====================================================
+    // 14. DESSIN DE LA PORTE
     // =====================================================
   
     private void dessinerPorte(
@@ -374,7 +524,6 @@ public class LabyrinthePainter implements GamePainter {
 
         // Encadrement extérieur
         crayon.setColor(COULEUR_CONTOUR_PORTE);
-
         crayon.fillRect(
                 porteX - 2,
                 porteY - 2,
@@ -384,7 +533,6 @@ public class LabyrinthePainter implements GamePainter {
 
         // Surface de la porte
         crayon.setColor(COULEUR_PORTE);
-
         crayon.fillRect(
                 porteX,
                 porteY,
@@ -413,7 +561,6 @@ public class LabyrinthePainter implements GamePainter {
         int taillePoignee = Math.max(3, tailleCase / 8);
 
         crayon.setColor(COULEUR_POIGNEE);
-
         crayon.fillOval(
                 porteX + largeurPorte * 3 / 4,
                 porteY + hauteurPorte / 2,
@@ -422,122 +569,191 @@ public class LabyrinthePainter implements GamePainter {
         );
     }
 
+
+        private void dessinerZoneQuestionnaire(
+                Graphics2D crayon,
+                int x,
+                int y,
+                int tailleCase) {
+
+        int marge = 3;
+
+        int caseX = x * tailleCase;
+        int caseY = y * tailleCase;
+
+        // Fond rouge
+        crayon.setColor(COULEUR_ZONE_QUESTIONNAIRE);
+        crayon.fillRect(
+                caseX + marge,
+                caseY + marge,
+                tailleCase - 2 * marge,
+                tailleCase - 2 * marge
+        );
+
+        // Contour rouge foncé
+        crayon.setColor(CONTOUR_ZONE_QUESTIONNAIRE);
+        crayon.drawRect(
+                caseX + marge,
+                caseY + marge,
+                tailleCase - 2 * marge,
+                tailleCase - 2 * marge
+        );
+
+        // Symbole "?"
+        Font anciennePolice = crayon.getFont();
+
+        crayon.setFont(new Font("Arial", Font.BOLD, tailleCase * 2 / 3));
+        crayon.setColor(COULEUR_SYMBOLE_QUESTIONNAIRE);
+
+        FontMetrics mesures = crayon.getFontMetrics();
+
+        String symbole = "?";
+
+        int texteX = caseX + (tailleCase - mesures.stringWidth(symbole)) / 2;
+        int texteY = caseY + (tailleCase - mesures.getHeight()) / 2
+                + mesures.getAscent();
+
+        crayon.drawString(symbole, texteX, texteY);
+
+        crayon.setFont(anciennePolice);
+        }
+
     // =====================================================
-    // 11. DESSIN DU LABYRINTHE
+    // 15. DESSIN DU LABYRINTHE
     // =====================================================
 
+   
+    
+   
     @Override
     public void draw(BufferedImage im) {
     	
         Graphics2D crayon = (Graphics2D) im.getGraphics();
 
-        crayon.setRenderingHint(
-                RenderingHints.KEY_INTERPOLATION,
-                RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR
-        );
+        try {
 
-        Labyrinthe labyrinthe = game.getLabyrinthe();
-        Heros heros = game.getHeros();
+            crayon.setRenderingHint(
+                    RenderingHints.KEY_INTERPOLATION,
+                    RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR
+            );
 
         int largeurEcran = im.getWidth();
         largeurEcranActu = largeurEcran;
         int hauteurEcran = im.getHeight();
+            Labyrinthe labyrinthe = game.getLabyrinthe();
+            Heros heros = game.getHeros();
 
-        // Calcul de la taille des cases
-        int tailleCase = Math.min(
-                largeurEcran / labyrinthe.getLargeur(),
-                hauteurEcran / labyrinthe.getHauteur()
-        );
+            Chambre chambreActuelle = labyrinthe.getChambreActuelle();
 
-        // Centrage du labyrinthe
-        int largeurLabyrinthe =
-                tailleCase * labyrinthe.getLargeur();
+            int largeurEcran = im.getWidth();
+            int hauteurEcran = im.getHeight();
 
-        int hauteurLabyrinthe =
-                tailleCase * labyrinthe.getHauteur();
+            // Identifier la chambre actuelle
+            int idChambre = chambreActuelle.getId();
 
-        int offsetX =
-                (largeurEcran - largeurLabyrinthe) / 2;
+            // Calcul de la taille des cases
+            int tailleCase = Math.min(
+                    largeurEcran / labyrinthe.getLargeur(),
+                    hauteurEcran / labyrinthe.getHauteur()
+            );
 
-        int offsetY =
-                (hauteurEcran - hauteurLabyrinthe) / 2;
+            // Centrage du labyrinthe
+            int largeurLabyrinthe =
+                    tailleCase * labyrinthe.getLargeur();
 
-        // Fond
-        crayon.setColor(COULEUR_FOND);
+            int hauteurLabyrinthe =
+                    tailleCase * labyrinthe.getHauteur();
 
-        crayon.fillRect(
-                0,
-                0,
-                largeurEcran,
-                hauteurEcran
-        );
+            int offsetX =
+                    (largeurEcran - largeurLabyrinthe) / 2;
 
-        crayon.translate(offsetX, offsetY);
+            int offsetY =
+                    (hauteurEcran - hauteurLabyrinthe) / 2;
 
-        // Dessiner les murs
-        crayon.setColor(COULEUR_MUR);
+            // 1. Dessiner le fond adapté à la chambre
+            dessinerFond(
+                    crayon,
+                    idChambre,
+                    largeurEcran,
+                    hauteurEcran
+            );
 
-        for (int y = 0; y < labyrinthe.getHauteur(); y++) {
+            // 2. Centrer le labyrinthe
+            crayon.translate(offsetX, offsetY);
 
-            for (int x = 0; x < labyrinthe.getLargeur(); x++) {
+            // 3. Dessiner les sols et les murs
+            dessinerTerrain(
+                    crayon,
+                    labyrinthe,
+                    tailleCase,
+                    idChambre
+            );
 
-                if (labyrinthe.estMur(x, y)) {
+            // 4. Dessiner les portes
+            for (int y = 0; y < labyrinthe.getHauteur(); y++) {
+                for (int x = 0; x < labyrinthe.getLargeur(); x++) {
 
-                    crayon.fillRect(
-                            x * tailleCase,
-                            y * tailleCase,
-                            tailleCase,
-                            tailleCase
-                    );
+                    if (labyrinthe.estPorte(x, y)) {
+                        dessinerPorte(crayon, x, y, tailleCase);
+                    }
                 }
             }
-        }
 
-        // Dessiner les portes
-        for (int y = 0; y < labyrinthe.getHauteur(); y++) {
+            // 5. Dessiner la zone de questionnaire
+            if (chambreActuelle.getZoneQuestionnaire() != null) {
 
-            for (int x = 0; x < labyrinthe.getLargeur(); x++) {
+                int zoneX =
+                        chambreActuelle.getZoneQuestionnaire().getX();
 
-                if (labyrinthe.estPorte(x, y)) {
-                	//condition d'affichage après récupération de la clé
-                	if(game.GetAffichePorte()) {
-                    dessinerPorte(
-                            crayon,
-                            x,
-                            y,
-                            tailleCase
-                    );
-                	}
-                }
+                int zoneY =
+                        chambreActuelle.getZoneQuestionnaire().getY();
+
+                dessinerZoneQuestionnaire(
+                        crayon,
+                        zoneX,
+                        zoneY,
+                        tailleCase
+                );
             }
+
+            // 6. Dessiner les décors
+            DecorPainter.dessiner(
+                    crayon,
+                    labyrinthe.getDecors(),
+                    labyrinthe.getRessources(),
+                    tailleCase
+            );
+
+            // 7. Dessiner les ressources
+            RessourcePainter.dessiner(
+                    crayon,
+                    labyrinthe.getRessources(),
+                    tailleCase
+            );
+
+            // 8. Dessiner les monstres
+            dessinerMonstres(
+                    crayon,
+                    labyrinthe,
+                    tailleCase
+            );
+
+            // 9. Dessiner le héros au premier plan
+            dessinerHeros(crayon, heros, tailleCase);
+            crayon.translate(-offsetX, -offsetY);
+            AfficherVie(crayon, heros, tailleCase);
+            AfficherQuantiteCristal(crayon,heros,tailleCase);
+            afficherInventaire(crayon, heros);
+            
+
+        } finally {
+            crayon.dispose();
         }
-
-        // Dessiner les décors et les ressources
-        DecorPainter.dessiner(
-                crayon,
-                labyrinthe.getDecors(),
-                tailleCase
-        );
-
-        RessourcePainter.dessiner(
-                crayon,
-                labyrinthe.getRessources(),
-                tailleCase
-        );
-
-        // Dessiner le héros
-        dessinerHeros(crayon, heros, tailleCase);
-        
-        
-        crayon.translate(-offsetX, -offsetY);
-        AfficherVie(crayon, heros, tailleCase);
-        AfficherQuantiteCristal(crayon,heros,tailleCase);
-        afficherInventaire(crayon, heros);
-        crayon.dispose();
     }
 
+
     // =====================================================
-    // 12. DIMENSIONS DE LA FENETRE
+    // 16. DIMENSIONS DE LA FENETRE
     // =====================================================
 
     @Override
@@ -736,5 +952,39 @@ public static Rectangle getSlotRect(int i) {
 }
     
 
+    private void dessinerMonstres(Graphics2D crayon,
+                                      Labyrinthe labyrinthe,
+                                      int tailleCase) {
+
+        for (Monstre monstre : labyrinthe.getMonstres()) {
+
+                if (!monstre.estElimine()) {
+                    if (monstre.getDifficulte() == "facile") {
+                        crayon.setColor(Color.GREEN);
+                    }
+                    if (monstre.getDifficulte() == "intermediaire") {
+                        crayon.setColor(Color.ORANGE);
+                    }
+                    if (monstre.getDifficulte() == "difficile") {
+                        crayon.setColor(Color.RED);
+                    }
+                    if (monstre.getDifficulte() == "boss") {
+                        crayon.setColor(Color.BLACK);
+                    }
+
+
+                crayon.fillOval(
+                        monstre.getX() * tailleCase,
+                        monstre.getY() * tailleCase,
+                        tailleCase,
+                        tailleCase
+                );
+            }
+        }
+    }
+
+
+
+}
 
 
