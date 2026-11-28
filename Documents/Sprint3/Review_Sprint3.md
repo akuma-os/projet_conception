@@ -31,7 +31,7 @@ Les fonctionnalités suivantes, prévues dans le backlog, n'ont pas été finali
 - **Gestion des vies :** gestion complète de la diminution des points de vie et de leurs conséquences sur le déroulement du jeu.
 - **Gestion des pièges :** détection des cases pièges et application de leurs effets sur le héros.
 - **Interface utilisateur :** finalisation de l'affichage et de l'actualisation des cœurs et des différents indicateurs du jeu.
-- **Tests d'intégration :** validation globale des interactions entre les monstres, les missions, les ressources, les vies et les portes.
+- **Tests  :** validation globale .
 
 ## Bilan
 
